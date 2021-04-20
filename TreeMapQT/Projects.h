@@ -114,7 +114,7 @@ public:
         }
     }
 
-    void Focus(pTArea& area)
+    void Focus(pTArea area)
     {
         UnFocus();
         if (area)
