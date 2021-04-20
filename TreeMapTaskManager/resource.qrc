@@ -1,0 +1,57 @@
+<RCC>
+    <qresource prefix="/task">
+        <file>images/add.png</file>
+        <file>images/levelup.png</file>
+        <file>images/back.png</file>
+        <file>images/close.png</file>
+        <file>images/copy.png</file>
+        <file>images/cut.png</file>
+        <file>images/delete.png</file>
+        <file>images/edit.png</file>
+        <file>images/paste.png</file>
+        <file>images/settings.png</file>
+        <file>images/browser.png</file>
+        <file>images/cancel.png</file>
+        <file>images/confirm.png</file>
+    </qresource>
+    <qresource prefix="/taskview">
+        <file>images/viewlist.png</file>
+        <file>images/viewmap.png</file>
+    </qresource>
+    <qresource prefix="/view">
+        <file>images/settings.png</file>
+        <file>images/projects.png</file>
+        <file>images/work.png</file>
+        <file>images/workout.png</file>
+    </qresource>
+    <qresource prefix="/">
+        <file>images/textedit/checkbox.png</file>
+        <file>images/textedit/checkbox-checked.png</file>
+        <file>images/textedit/editcopy.png</file>
+        <file>images/textedit/editcut.png</file>
+        <file>images/textedit/editpaste.png</file>
+        <file>images/textedit/editredo.png</file>
+        <file>images/textedit/editundo.png</file>
+        <file>images/textedit/exportpdf.png</file>
+        <file>images/textedit/filenew.png</file>
+        <file>images/textedit/fileopen.png</file>
+        <file>images/textedit/fileprint.png</file>
+        <file>images/textedit/filesave.png</file>
+        <file>images/textedit/format-indent-less.png</file>
+        <file>images/textedit/format-indent-more.png</file>
+        <file>images/textedit/textbold.png</file>
+        <file>images/textedit/textcenter.png</file>
+        <file>images/textedit/textitalic.png</file>
+        <file>images/textedit/textjustify.png</file>
+        <file>images/textedit/textleft.png</file>
+        <file>images/textedit/textright.png</file>
+        <file>images/textedit/textunder.png</file>
+        <file>images/textedit/zoomin.png</file>
+        <file>images/textedit/zoomout.png</file>
+    </qresource>
+    <qresource prefix="/file">
+        <file>images/fileopen.png</file>
+        <file>images/filesave.png</file>
+        <file>images/filenew.png</file>
+    </qresource>
+</RCC>
