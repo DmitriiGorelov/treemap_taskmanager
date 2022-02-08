@@ -216,12 +216,13 @@ void MainWindow::resizeEvent(QResizeEvent* event)
             // Create vertical layout
             m_vLayoutMain = new QVBoxLayout();
             // Set vertical layout margin to zero
-            m_vLayoutMain->setMargin(0);
+            //m_vLayoutMain->setContentsMargin(0);
+            m_vLayoutMain->setSpacing(0);
 
             // Create horizontal layout
             m_hLayoutMain = new QHBoxLayout();
             // Set horizontal layout to zero
-            m_hLayoutMain->setMargin(0);
+            //m_hLayoutMain->setContentsMargin(0);
             m_hLayoutMain->setSpacing(0);
 
             // Add horizontal layout to vertical layout
@@ -267,12 +268,13 @@ void MainWindow::resizeEvent(QResizeEvent* event)
            // Create vertical layout
            m_vLayoutMain = new QVBoxLayout();
            // Set vertical layout margin to zero
-           m_vLayoutMain->setMargin(0);
+           //m_vLayoutMain->setMargin(0);
+           m_vLayoutMain->setSpacing(0);
 
            // Create horizontal layout
            m_hLayoutMain = new QHBoxLayout();
            // Set horizontal layout to zero
-           m_hLayoutMain->setMargin(0);
+           //m_hLayoutMain->setMargin(0);
            m_hLayoutMain->setSpacing(0);
 
            // Add horizontal layout to vertical layout
@@ -756,12 +758,13 @@ cViewProjects::cViewProjects(QWidget *parent)
     // Create vertical layout
     m_vLayoutMain = new QVBoxLayout();
     // Set vertical layout margin to zero
-    m_vLayoutMain->setMargin(0);
+    //m_vLayoutMain->setMargin(0);
+    m_vLayoutMain->setSpacing(0);
 
     // Create horizontal layout
     m_hLayoutMain = new QHBoxLayout();
     // Set horizontal layout to zero
-    m_hLayoutMain->setMargin(0);
+    //m_hLayoutMain->setMargin(0);
     m_hLayoutMain->setSpacing(0);
 
     // Add horizontal layout to vertical layout

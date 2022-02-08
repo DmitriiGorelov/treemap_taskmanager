@@ -31,7 +31,7 @@ SOURCES += \
     DataProvider/XMLParametrisedOsc.cpp \
     DataProvider/li/include.cpp \
     Projects.cpp \
-    main.cpp \
+    main.tpp \
     widget.cpp
 
 HEADERS += \

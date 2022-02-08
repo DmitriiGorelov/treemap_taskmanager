@@ -91,7 +91,7 @@
 
 #include "textedit.h"
 
-const QString rsrcPath = ":/images/textedit";
+const QString rsrcPath = "images/textedit";
 
 TextEdit::TextEdit(QWidget *parent)
 #if UseMainWindow
