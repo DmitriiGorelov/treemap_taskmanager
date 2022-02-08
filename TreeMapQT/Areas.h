@@ -141,6 +141,11 @@ struct TPoint{
             return sum;
         }
 
+        bool Empty()
+        {
+            return Areas.empty();
+        }
+
         double Max()
         {
             double max(0.0);
@@ -198,6 +203,7 @@ struct TPoint{
             if (where)
             {
                 what->pParentArea=where;
+                what->SetValue(where->Empty()?100:where->Max()/2.0);
                 where->addArea(what);
             }
         }
@@ -210,6 +216,21 @@ struct TPoint{
         void SetText(const QString& str)
         {
             cXMLParametrisedOsc::paraText(str.toStdString());
+        }
+
+        double GetValue()
+        {
+            return cXMLParametrisedOsc::paraValue();
+        }
+
+        void SetValue(double value)
+        {
+            cXMLParametrisedOsc::paraValue(value);
+        }
+
+        void ScaleValue(int percent)
+        {
+            SetValue(percent*0.01*GetValue());
         }
 
         std::list<pXMLParametrised> getChildrenOsc() final

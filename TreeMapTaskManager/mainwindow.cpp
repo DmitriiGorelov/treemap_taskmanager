@@ -13,6 +13,7 @@
 #include <QInputDialog>
 #include <QFileDialog>
 #include <QSettings>
+#include <QSlider>
 
 #ifndef QT_NO_DEBUG
 #define CHECK_TRUE(instruction) Q_ASSERT(instruction)
@@ -348,11 +349,16 @@ void MainWindow::ShowFocusedTaskPopUp(int x, int y)
         connect(m_wFocusedTaskPopUp, &cFocusedTaskPopUp::DeleteTask, this, &MainWindow::DeleteTask);
         connect(m_wFocusedTaskPopUp, &cFocusedTaskPopUp::ViewTask, this, &MainWindow::ViewTask);
         connect(m_wFocusedTaskPopUp, &cFocusedTaskPopUp::AddTask, this, &MainWindow::AddTaskFocused);
+        connect(m_wFocusedTaskPopUp, &cFocusedTaskPopUp::TaskVolumeChanged, this, &MainWindow::TaskVolumeChanged);
     }
 
     //QPoint pos = mapToGlobal(QPoint(x, y));
     QPoint pos(x, y);
     m_wFocusedTaskPopUp->UpdateGeometry(pos, ButtonSize(), width(), height());
+    auto focused = wTasks->SelectedP()->Focused()->GetValue();
+    auto max = wTasks->SelectedP()->Focused()->ParentA()->Max()*2.0;
+    auto min = wTasks->SelectedP()->Focused()->ParentA()->Max()/10.0;
+    m_wFocusedTaskPopUp->SetValueRange(min, max, focused);
     m_wFocusedTaskPopUp->show();
 }
 
@@ -423,6 +429,12 @@ void MainWindow::AddTaskFocused()
     HideFocusedTaskPopUp();
     wTasks->AddTaskFocused();
     ShowWindowEditTask();
+}
+
+void MainWindow::TaskVolumeChanged(int value)
+{
+    //HideFocusedTaskPopUp();
+    wTasks->ChangeFocusedVolume(value);
 }
 
 void MainWindow::LevelUp()
@@ -644,6 +656,17 @@ cFocusedTaskPopUp::cFocusedTaskPopUp(QWidget *parent)
         connect(b, &QPushButton::clicked,this, &cFocusedTaskPopUp::bViewTaskClicked);
         b->setIcon(QIcon(QPixmap(":/task/images/browser.png")));
     }
+
+    {
+        QSlider* b = new QSlider(this);
+        m_b.push_back(b);
+        b->setMinimum(1);
+        b->setMaximum(200);
+        b->setValue(100);
+
+        connect(b, &QSlider::sliderMoved,this, &cFocusedTaskPopUp::sTaskVolumeChanged);
+        //b->setIcon(QIcon(QPixmap(":/task/images/browser.png")));
+    }
 }
 
 void cFocusedTaskPopUp::UpdateGeometry(QPoint point, int newHeight, int parentWidth, int parentHeight)
@@ -665,6 +688,20 @@ void cFocusedTaskPopUp::UpdateGeometry(QPoint point, int newHeight, int parentWi
     //move(point);
 }
 
+void cFocusedTaskPopUp::SetValueRange(int min, int max, int value)
+{
+    for (auto& it : m_b)
+    {
+        auto o=qobject_cast<QSlider*>(it);
+        if (o)
+        {
+            o->setMinimum(min);
+            o->setMaximum(max);
+            o->setValue(value);
+        }
+    }
+}
+
 void cFocusedTaskPopUp::resizeEvent(QResizeEvent* event)
 {
     QWidget::resizeEvent(event);
@@ -678,7 +715,7 @@ void cFocusedTaskPopUp::resizeEvent(QResizeEvent* event)
         int left(0);
         for (auto& it : m_b)
         {
-            it->setGeometry(left,top,width,width);
+            qobject_cast<QWidget*>(it)->setGeometry(left,top,width,width);
             top+=width+1;
         }
     }
@@ -688,13 +725,15 @@ void cFocusedTaskPopUp::resizeEvent(QResizeEvent* event)
         int left(width-height-1);
         for (auto& it : m_b)
         {
-            it->setGeometry(left,top,height,height);
+            qobject_cast<QWidget*>(it)->setGeometry(left,top,height,height);
             left-=height-1;
         }
     }
     for (auto& it : m_b)
     {
-        it->setIconSize(QSize(it->width(), it->height()));
+        auto o=qobject_cast<QPushButton*>(it);
+        if (o)
+            o->setIconSize(QSize(o->width(), o->height()));
     }
 }
 
@@ -717,6 +756,12 @@ void cFocusedTaskPopUp::bAddTaskClicked()
 {
     emit AddTask();
 }
+
+void cFocusedTaskPopUp::sTaskVolumeChanged(int position)
+{
+    emit TaskVolumeChanged(position);
+}
+
 // -----------------------------------------------------------------------------------------ProjectModel
 ProjectTableModel::ProjectTableModel(QObject *parent)
     :QAbstractTableModel(parent)

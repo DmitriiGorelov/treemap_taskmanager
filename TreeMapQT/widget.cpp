@@ -358,3 +358,14 @@ bool Widget::SelectProject(const QString& uid)
     }
     return false;
 }
+
+void Widget::ChangeFocusedVolume(double value)
+{
+    if (SelectedP()->Focused())
+        SelectedP()->Focused()->SetValue(value);
+
+    WriteXML();
+
+    m_NeedCalculate = true;
+    repaint();
+}

@@ -46,6 +46,8 @@ public:
     TProjects GetProjects() {return Projects;}
     bool SelectProject(const QString& uid);
 
+    void ChangeFocusedVolume(double value);
+
 protected:    
     void resizeEvent(QResizeEvent* event);
     void paintEvent(QPaintEvent *) final;

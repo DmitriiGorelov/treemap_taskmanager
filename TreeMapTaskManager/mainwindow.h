@@ -66,6 +66,7 @@ public:
     }
 
     void UpdateGeometry(QPoint point, int newHeight, int parentWidth, int parentHeight);
+    void SetValueRange(int min, int max, int value);
 
 protected:
     void resizeEvent(QResizeEvent* event) final;
@@ -76,6 +77,7 @@ private slots:
     void bEditTaskClicked();
     void bDeleteTaskClicked();
     void bAddTaskClicked();
+    void sTaskVolumeChanged(int position);
 
 private:
 signals:
@@ -83,9 +85,10 @@ signals:
     void EditTask();
     void DeleteTask();
     void AddTask();
+    void TaskVolumeChanged(int position);
 
 private:
-    std::vector<QPushButton*> m_b;
+    std::vector<QObject*> m_b;
     //QPushButton* m_bDeleteTask;
 };
 
@@ -179,6 +182,7 @@ private slots:
     void AddTaskSelected();
     void LevelUp();
     void AddTaskFocused();
+    void TaskVolumeChanged(int percent);
 
     // GroupButtons
     void ViewTask();
