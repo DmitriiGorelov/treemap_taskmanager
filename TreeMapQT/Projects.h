@@ -35,7 +35,7 @@ public:
         , pFocusedA(nullptr)
     {
         pRootArea->paraCaption("Project "+std::to_string(counter()));
-        pRootArea->Areas = areas;
+        pRootArea->setAreas(areas);
     }
 
     TProject(const std::string& _uid)
@@ -50,15 +50,15 @@ public:
 
     void AddTaskSelected(pTArea area)
     {
-        SelectedA()->Areas.emplace_back(area);
-        area->PasteTo(SelectedA());
+        //SelectedA()->Areas.emplace_back(area);
+        TArea::PasteTo(area, SelectedA());
     }
 
     void AddTaskSelected(double part)
     {
         pTArea area=TArea::Create(MaxValue()*part,nullptr);
-        SelectedA()->Areas.push_back(area);
-        area->PasteTo(SelectedA());
+        //SelectedA()->Areas.push_back(area);
+        TArea::PasteTo(area, SelectedA());
         pFocusedA = area;
     }
 
@@ -69,8 +69,8 @@ public:
 
         pTArea area=TArea::Create(Focused()->Max()*part,nullptr);
 
-        Focused()->Areas.push_back(area);
-        area->PasteTo(Focused());
+        //Focused()->Areas.push_back(area);
+        TArea::PasteTo(area, Focused());
         pFocusedA = area;
     }
 
@@ -136,6 +136,11 @@ public:
         return pFocusedA;
     }
 
+    pTArea CanSelect(int x, int y)
+    {
+        return SelectedA()->Select(x,y);
+    }
+
     void Select(int x, int y)
     {
         pTArea area =SelectedA()->Select(x,y);
@@ -163,9 +168,10 @@ public:
             auto p = pFocusedA->ParentA();
             if (p)
             {
-                auto it = std::find(p->Areas.begin(), p->Areas.end(), pFocusedA);
+                /*auto it = std::find(p->Areas.begin(), p->Areas.end(), pFocusedA);
                 if (it!=p->Areas.end())
-                    p->Areas.erase(it);
+                    p->Areas.erase(it);*/
+                p->Remove(pFocusedA);
             }
         }
     }

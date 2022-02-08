@@ -107,6 +107,11 @@ struct TPoint{
             paraValue(_value);
         }
 
+        void setAreas(const TAreas& areas)
+        {
+            Areas=areas;
+        }
+
         void addArea(pTArea& area)
         {
             Areas.push_back(area);
@@ -174,11 +179,26 @@ struct TPoint{
                 return pTArea();
         }
 
-        void PasteTo(pTArea area)
+        void Remove(pTArea area)
         {
-            if (area)
+            auto it = std::find(Areas.begin(), Areas.end(), area);
+            if (it!=Areas.end())
+                Areas.erase(it);
+        }
+
+        static void PasteTo(pTArea what, pTArea where)
+        {
+            if (!what)
+                return;
+
+            auto parentWhat = what->ParentA();
+            if (parentWhat)
+                parentWhat->Remove(what);
+
+            if (where)
             {
-                pParentArea=area;
+                what->pParentArea=where;
+                where->addArea(what);
             }
         }
 
@@ -225,7 +245,7 @@ struct TPoint{
         QPointF BottomLeft;
         QPointF BottomRight;
 
-    //private:
+    private:
         TAreas Areas;
         boost::weak_ptr<TArea> pParentArea;
 

@@ -179,130 +179,6 @@ void Widget::paintEvent(QPaintEvent *event)
         SelectedP()->SelectedA()->Paint(painter);
 
         return;
-
-        //return;
-
-
-        // ----------------------------------------------------------------------------------- old style, not oop
-
-        TAreas Values;
-        Values = SelectedP()->SelectedA()->Areas;
-
-        if (m_NeedCalculate)
-        {
-            Calculate2(Values,2,this->width(), this->height());
-            //m_NeedCalculate = false;
-        }
-
-        //painter.setPen(Qt::yellow);
-        painter.setPen(QPen(Qt::red, 4, Qt::SolidLine, Qt::RoundCap));
-
-        for (auto& it : Values)
-        {
-            painter.setBrush(QBrush(it->paraColor(), Qt::SolidPattern));
-            painter.drawRect(it->TopLeft.x(),it->TopLeft.y(), it->BottomRight.x()-it->TopLeft.x(), it->BottomRight.y()-it->TopLeft.y());
-        }
-
-        painter.setPen(Qt::black);
-        for (auto& it : Values)
-        {
-            // debug UID
-            //painter.drawText(it->TopLeft.x+10, it->TopLeft.y+10, it->UID());
-            //painter.drawText(it->TopLeft.x+10, it->TopLeft.y+30, QString::number(it->paraValue()));
-            //painter.drawText(it->TopLeft.x+10, it->TopLeft.y+30, it->paraText().c_str());
-
-            QRectF rec = QRectF(QPointF(it->TopLeft.x(),it->TopLeft.y()), QSizeF(it->BottomRight.x()-it->TopLeft.x(), it->BottomRight.y()-it->TopLeft.y()));
-
-            // 1
-            QStaticText text;
-            text.setTextWidth(rec.width());
-            text.setText(it->paraText().c_str());
-            painter.setClipRect(rec);
-            painter.drawStaticText(rec.topLeft().x()+10,rec.topLeft().y(), text);
-            QSizeF s=text.size();
-            //qDebug() << " square=" << s.width()*s.height() << " width=" << s.width() << " height=" << s.height();
-
-            //painter.drawLine(it->TopLeft.x,it->TopLeft.y+s.height(),it->TopRight.x,it->TopRight.y+s.height());
-
-            TAreas Values2 = it->Areas;
-            if (m_NeedCalculate)
-            {
-                Calculate2(Values2,2,it->BottomRight.x()-it->TopLeft.x(), it->BottomRight.y()-it->TopLeft.y()-s.height());
-                //m_NeedCalculate = false;
-            }
-
-            painter.setPen(QPen(Qt::red, 1, Qt::SolidLine, Qt::RoundCap));
-            painter.setBrush(QBrush(Qt::white, Qt::SolidPattern));
-            for (auto& it2 : Values2)
-            {
-                painter.drawRect(it2->TopLeft.x()+it->TopLeft.x()+3,it2->TopLeft.y()+it->TopLeft.y()+s.height()+3, it2->BottomRight.x()-it2->TopLeft.x()-6, it2->BottomRight.y()-it2->TopLeft.y()-6);
-
-            }
-
-            painter.setPen(Qt::black);
-            for (auto& it2 : Values2)
-            {
-                QRectF rec2 = QRectF(QPointF(it2->TopLeft.x()+it->TopLeft.x()+3,it2->TopLeft.y()+it->TopLeft.y()+s.height()+3), QSizeF(it2->BottomRight.x()-it2->TopLeft.x()-6, it2->BottomRight.y()-it2->TopLeft.y()-6));
-
-                // 1
-                QStaticText text;
-                text.setTextWidth(rec2.width());
-
-                text.setText(it2->paraText().c_str());
-                painter.setClipRect(rec2);
-                painter.drawStaticText(rec2.topLeft().x()+10,rec2.topLeft().y(), text);
-
-                QSizeF s2=text.size();
-                //qDebug() << " square=" << s.width()*s.height() << " width=" << s.width() << " height=" << s.height();
-
-                TAreas Values3 = it2->Areas;
-                if (m_NeedCalculate)
-                {
-                    Calculate2(Values3,2,it2->BottomRight.x()-it2->TopLeft.x(), it2->BottomRight.y()-it2->TopLeft.y()-s2.height()/*-s.height()*/);
-                    //m_NeedCalculate = false;
-                }
-
-                painter.setPen(QPen(Qt::red, 1, Qt::SolidLine, Qt::RoundCap));
-                painter.setBrush(QBrush(Qt::white, Qt::SolidPattern));
-                for (auto& it3 : Values3)
-                {
-                    painter.drawRect(it3->TopLeft.x()+it2->TopLeft.x()+it->TopLeft.x()+3,it3->TopLeft.y()+it2->TopLeft.y()+it->TopLeft.y()+s2.height()+s.height()+3, it3->BottomRight.x()-it3->TopLeft.x()-6, it3->BottomRight.y()-it3->TopLeft.y()-6);
-                }
-
-                painter.setPen(Qt::black);
-                for (auto& it3 : Values3)
-                {
-                    QRectF rec3 = QRectF(QPointF(it3->TopLeft.x()+it2->TopLeft.x()+it->TopLeft.x()+3,it3->TopLeft.y()+it2->TopLeft.y()+it->TopLeft.y()+s2.height()+s.height()+3), QSizeF(it3->BottomRight.x()-it3->TopLeft.x()-6, it3->BottomRight.y()-it3->TopLeft.y()-6));
-
-                    // 1
-                    QStaticText text;
-                    text.setTextWidth(rec3.width());
-                    text.setText(it3->paraText().c_str());
-                    painter.setClipRect(rec3);
-                    painter.drawStaticText(rec3.topLeft().x()+10,rec3.topLeft().y(), text);
-                }
-            }
-
-            //QRectF realRect = ::boundingRect();
-
-            // 2
-            //painter.drawText(rec, Qt::AlignTop | Qt::AlignLeft | Qt::TextWordWrap, it->paraText().c_str());
-
-
-            // 3
-            // draw rich text:
-            /*painter.save();
-            QTextDocument doc;
-            doc.setHtml( it->paraText().c_str() );
-            QAbstractTextDocumentLayout::PaintContext context;
-            doc.setPageSize( rec.size());
-            painter.setClipRect(rec);
-            painter.translate(rec.x(), rec.y());
-            doc.documentLayout()->draw(&painter, context);
-            painter.restore();*/
-        }
-
-        m_NeedCalculate=false;
     }
 
 }
@@ -328,7 +204,7 @@ void Widget::mousePressEvent(QMouseEvent *event)
         }
         else
         {
-            SelectedP()->Focus(m_mousePressPoint.x(), m_mousePressPoint.y());
+            SelectedP()->Focus(m_mousePressPoint.x(), m_mousePressPoint.y());            
         }
     }
     else
@@ -364,16 +240,22 @@ void Widget::mouseReleaseEvent(QMouseEvent *event)
 #ifndef Q_OS_ANDROID
     if (event->button() == Qt::MouseButton::LeftButton)
     {
-        if ((SelectedP()->CanFocus(x,y) && SelectedP()->Focused())&&
-            (SelectedP()->CanFocus(x,y)->UID()==SelectedP()->Focused()->UID()))
+        if (SelectedP()->CanFocus(x,y) && SelectedP()->Focused())
         {
-            SelectedP()->Select(m_mousePressPoint.x(), m_mousePressPoint.y());
-            m_NeedCalculate = true;
-            repaint();
-        }
-        else // mousePress and mouseRelease are pointing to different items. Is it drag-n-drop?
-        {
-
+            if (SelectedP()->CanFocus(x,y)->UID()==SelectedP()->Focused()->UID())
+            {
+                SelectedP()->Select(m_mousePressPoint.x(), m_mousePressPoint.y());
+                m_NeedCalculate = true;
+                repaint();
+            }
+            else // mousePress and mouseRelease are pointing to different items. Is it drag-n-drop?
+            {
+                auto focusedOld = SelectedP()->Focused();
+                auto selectedNew = SelectedP()->CanSelect(x, y);
+                TArea::PasteTo(focusedOld, selectedNew);
+                m_NeedCalculate = true;
+                repaint();
+            }
         }
     }
     else
