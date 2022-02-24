@@ -13,6 +13,7 @@
 #include <QInputDialog>
 #include <QFileDialog>
 #include <QSettings>
+#include <QSlider>
 
 #ifndef QT_NO_DEBUG
 #define CHECK_TRUE(instruction) Q_ASSERT(instruction)
@@ -23,7 +24,7 @@
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
-    , m_wFocusedTaskPopUp(Q_NULLPTR)
+    //, m_wFocusedTaskPopUp(Q_NULLPTR)
     , m_wTextEdit(Q_NULLPTR)
     , wProjects(Q_NULLPTR)
     , wTasks(Q_NULLPTR)
@@ -54,7 +55,7 @@ MainWindow::MainWindow(QWidget *parent)
         wTasks = new Widget(QString(std::string(backupFolder() + std::string("/OscInfo.xml")).c_str()),this);
     }
     connect(wTasks, &Widget::MousePressed, this, &MainWindow::MapMousePressed);
-    connect(wTasks, &Widget::FocusedTaskPopUp, this, &MainWindow::FocusedTaskPopUp);
+    //connect(wTasks, &Widget::FocusedTaskPopUp, this, &MainWindow::FocusedTaskPopUp);
 
 #if UseGroupButtons
     m_wGroupButtons = new cGroupButtons(this);    
@@ -216,12 +217,13 @@ void MainWindow::resizeEvent(QResizeEvent* event)
             // Create vertical layout
             m_vLayoutMain = new QVBoxLayout();
             // Set vertical layout margin to zero
-            m_vLayoutMain->setMargin(0);
+            //m_vLayoutMain->setContentsMargin(0);
+            m_vLayoutMain->setSpacing(0);
 
             // Create horizontal layout
             m_hLayoutMain = new QHBoxLayout();
             // Set horizontal layout to zero
-            m_hLayoutMain->setMargin(0);
+            //m_hLayoutMain->setContentsMargin(0);
             m_hLayoutMain->setSpacing(0);
 
             // Add horizontal layout to vertical layout
@@ -267,12 +269,13 @@ void MainWindow::resizeEvent(QResizeEvent* event)
            // Create vertical layout
            m_vLayoutMain = new QVBoxLayout();
            // Set vertical layout margin to zero
-           m_vLayoutMain->setMargin(0);
+           //m_vLayoutMain->setMargin(0);
+           m_vLayoutMain->setSpacing(0);
 
            // Create horizontal layout
            m_hLayoutMain = new QHBoxLayout();
            // Set horizontal layout to zero
-           m_hLayoutMain->setMargin(0);
+           //m_hLayoutMain->setMargin(0);
            m_hLayoutMain->setSpacing(0);
 
            // Add horizontal layout to vertical layout
@@ -329,7 +332,7 @@ void MainWindow::projectSelected(const QString& uid)
 
 void MainWindow::MapMousePressed(int x, int y, bool& canContinue)
 {
-    canContinue = !HideFocusedTaskPopUp();
+    canContinue = !wTasks->HideFocusedTaskPopUp();
 }
 
 void MainWindow::FocusedTaskPopUp(int x, int y)
@@ -339,36 +342,29 @@ void MainWindow::FocusedTaskPopUp(int x, int y)
 
 void MainWindow::ShowFocusedTaskPopUp(int x, int y)
 {
-    if (!m_wFocusedTaskPopUp)
+    /*if (!m_wFocusedTaskPopUp)
     {
         m_wFocusedTaskPopUp=new cFocusedTaskPopUp(this);
         connect(m_wFocusedTaskPopUp, &cFocusedTaskPopUp::EditTask, this, &MainWindow::EditTask);
         connect(m_wFocusedTaskPopUp, &cFocusedTaskPopUp::DeleteTask, this, &MainWindow::DeleteTask);
         connect(m_wFocusedTaskPopUp, &cFocusedTaskPopUp::ViewTask, this, &MainWindow::ViewTask);
         connect(m_wFocusedTaskPopUp, &cFocusedTaskPopUp::AddTask, this, &MainWindow::AddTaskFocused);
+        connect(m_wFocusedTaskPopUp, &cFocusedTaskPopUp::TaskVolumeChanged, this, &MainWindow::TaskVolumeChanged);
     }
 
     //QPoint pos = mapToGlobal(QPoint(x, y));
     QPoint pos(x, y);
     m_wFocusedTaskPopUp->UpdateGeometry(pos, ButtonSize(), width(), height());
-    m_wFocusedTaskPopUp->show();
-}
-
-bool MainWindow::HideFocusedTaskPopUp()
-{
-    bool result(false);
-    if (m_wFocusedTaskPopUp)
-    {
-        result = m_wFocusedTaskPopUp->isVisible();
-        m_wFocusedTaskPopUp->hide();
-    }
-    wTasks->repaint();
-    return result;
+    auto focused = wTasks->SelectedP()->Focused()->GetValue();
+    auto max = wTasks->SelectedP()->Focused()->ParentA()->Max()*2.0;
+    auto min = wTasks->SelectedP()->Focused()->ParentA()->Max()/10.0;
+    m_wFocusedTaskPopUp->SetValueRange(min, max, focused);
+    m_wFocusedTaskPopUp->show();*/
 }
 
 void MainWindow::FocusInGroupButtons()
 {
-    HideFocusedTaskPopUp();
+    wTasks->HideFocusedTaskPopUp();
 }
 
 void MainWindow::ShowWindowEditTask()
@@ -411,40 +407,28 @@ void MainWindow::TextEditBeforeClose()
 
 void MainWindow::AddTaskSelected()
 {
-    HideFocusedTaskPopUp();
+    wTasks->HideFocusedTaskPopUp();
     wTasks->AddTaskSelected();
     ShowWindowEditTask();
 }
 
 void MainWindow::AddTaskFocused()
 {
-    HideFocusedTaskPopUp();
+    wTasks->HideFocusedTaskPopUp();
     wTasks->AddTaskFocused();
     ShowWindowEditTask();
 }
 
+void MainWindow::TaskVolumeChanged(int value)
+{
+    //HideFocusedTaskPopUp();
+    wTasks->SetFocusedVolume(value);
+}
+
 void MainWindow::LevelUp()
 {
-    HideFocusedTaskPopUp();
+    wTasks->HideFocusedTaskPopUp();
     wTasks->LevelUp();
-}
-
-void MainWindow::ViewTask()
-{
-    HideFocusedTaskPopUp();
-}
-
-void MainWindow::EditTask()
-{
-    HideFocusedTaskPopUp();
-
-    ShowWindowEditTask();
-}
-
-void MainWindow::DeleteTask()
-{
-    HideFocusedTaskPopUp();
-    wTasks->DeleteFocused();
 }
 
 void MainWindow::DataBaseOpen()
@@ -611,110 +595,6 @@ void cGroupButtons::bLevelUpClicked()
     emit LevelUp();
 }
 
-//---------------------------------------------------------------------------------------------------cFocusedTaskPopUp
-
-cFocusedTaskPopUp::cFocusedTaskPopUp(QWidget *parent)
-    : QWidget(parent)
-    , m_b()
-{
-    {
-        QPushButton* b = new QPushButton(this);
-        m_b.push_back(b);
-        connect(b, &QPushButton::clicked,this, &cFocusedTaskPopUp::bDeleteTaskClicked);
-        b->setIcon(QIcon(QPixmap(":/task/images/delete.png")));
-    }
-    {
-        QPushButton* b = new QPushButton(this);
-        m_b.push_back(b);
-        connect(b, &QPushButton::clicked,this, &cFocusedTaskPopUp::bEditTaskClicked);
-        b->setIcon(QIcon(QPixmap(":/task/images/edit.png")));
-    }
-    {
-        QPushButton* b = new QPushButton(this);
-        m_b.push_back(b);
-        connect(b, &QPushButton::clicked,this, &cFocusedTaskPopUp::bAddTaskClicked);
-        b->setIcon(QIcon(QPixmap(":/task/images/add.png")));
-    }
-
-    {
-        QPushButton* b = new QPushButton(this);
-        m_b.push_back(b);
-        connect(b, &QPushButton::clicked,this, &cFocusedTaskPopUp::bViewTaskClicked);
-        b->setIcon(QIcon(QPixmap(":/task/images/browser.png")));
-    }
-}
-
-void cFocusedTaskPopUp::UpdateGeometry(QPoint point, int newHeight, int parentWidth, int parentHeight)
-{
-    /*QScreen* s=QGuiApplication::primaryScreen();
-    s->primaryOrientation();
-    qreal r = s->devicePixelRatio();
-    int ah = 0.25 / r; // 0.25 inch ~ 1sm*/
-    int width=newHeight * m_b.size() + m_b.size();
-    if (point.x()+width > parentWidth)
-    {
-        point.setX(parentWidth - width - 10);
-    }
-    if (point.y() + newHeight > parentHeight)
-    {
-        point.setY(parentHeight - newHeight - 10);
-    }
-    this->setGeometry(point.x(), point.y(), width, newHeight);
-    //move(point);
-}
-
-void cFocusedTaskPopUp::resizeEvent(QResizeEvent* event)
-{
-    QWidget::resizeEvent(event);
-    // Your code here.
-
-    int width=event->size().width();
-    int height=event->size().height();
-    if (width<height)
-    {
-        int top(0);
-        int left(0);
-        for (auto& it : m_b)
-        {
-            it->setGeometry(left,top,width,width);
-            top+=width+1;
-        }
-    }
-    else
-    {
-        int top(0);
-        int left(width-height-1);
-        for (auto& it : m_b)
-        {
-            it->setGeometry(left,top,height,height);
-            left-=height-1;
-        }
-    }
-    for (auto& it : m_b)
-    {
-        it->setIconSize(QSize(it->width(), it->height()));
-    }
-}
-
-void cFocusedTaskPopUp::bViewTaskClicked()
-{
-    emit ViewTask();
-}
-
-void cFocusedTaskPopUp::bEditTaskClicked()
-{
-    emit EditTask();
-}
-
-void cFocusedTaskPopUp::bDeleteTaskClicked()
-{
-    emit DeleteTask();
-}
-
-void cFocusedTaskPopUp::bAddTaskClicked()
-{
-    emit AddTask();
-}
 // -----------------------------------------------------------------------------------------ProjectModel
 ProjectTableModel::ProjectTableModel(QObject *parent)
     :QAbstractTableModel(parent)
@@ -756,12 +636,13 @@ cViewProjects::cViewProjects(QWidget *parent)
     // Create vertical layout
     m_vLayoutMain = new QVBoxLayout();
     // Set vertical layout margin to zero
-    m_vLayoutMain->setMargin(0);
+    //m_vLayoutMain->setMargin(0);
+    m_vLayoutMain->setSpacing(0);
 
     // Create horizontal layout
     m_hLayoutMain = new QHBoxLayout();
     // Set horizontal layout to zero
-    m_hLayoutMain->setMargin(0);
+    //m_hLayoutMain->setMargin(0);
     m_hLayoutMain->setSpacing(0);
 
     // Add horizontal layout to vertical layout

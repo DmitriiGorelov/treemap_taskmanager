@@ -7,7 +7,7 @@ TARGET          = textedit
 
 HEADERS         = textedit.h
 SOURCES         = textedit.cpp \
-                  main.cpp
+                  main.tpp
 
 RESOURCES += textedit.qrc
 build_all:!build_pass {

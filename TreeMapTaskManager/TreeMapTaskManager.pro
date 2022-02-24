@@ -1,9 +1,10 @@
 QT       += core gui
 QT       += widgets
-requires(qtConfig(filedialog))
+
+#requires(qtConfig(filedialog))
 qtHaveModule(printsupport): QT += printsupport
 
-greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
+QT += widgets
 
 CONFIG += c++11
 #CONFIG += static
@@ -21,8 +22,8 @@ DEFINES += WITH_BOOST_FILESYSTEM=0
 
 
 #INCLUDEPATH += $$PWD/../vendor
-INCLUDEPATH += c:\libs\boost_1_72_0
-INCLUDEPATH += c:\libs\PUGI
+INCLUDEPATH += d:\Projekte\Vendor\boost_1_76_0
+INCLUDEPATH += d:\Projekte\Vendor\PUGI
 
 # You can also make your code fail to compile if it uses deprecated APIs.
 # In order to do so, uncomment the following line.
@@ -39,10 +40,11 @@ SOURCES += \
     ../TreeMapQT/DataProvider/XMLParameters/XMLParametrised.cpp \
     ../TreeMapQT/DataProvider/XMLParametrisedOsc.cpp \
     ../TreeMapQT/DataProvider/li/include.cpp \
+    ../TreeMapQT/FocusedTaskPopUp.cpp \
     ../TreeMapQT/Projects.cpp \
     ../TreeMapQT/widget.cpp \
     ../TreeMapTextEdit/textedit.cpp \
-    c:/libs/PUGI/XML/pugixml.cpp \
+    d:\Projekte\Vendor/PUGI/XML/pugixml.cpp \
     dialogedittext.cpp \
     main.cpp \
     mainwindow.cpp
@@ -60,10 +62,11 @@ HEADERS += \
     ../TreeMapQT/DataProvider/XMLParameters/XMLParametrised_Internals.h \
     ../TreeMapQT/DataProvider/XMLParametrisedOsc.h \
     ../TreeMapQT/DataProvider/li/include.h \
+    ../TreeMapQT/FocusedTaskPopUp.h \
     ../TreeMapQT/Projects.h \
     ../TreeMapQT/widget.h \
     ../TreeMapTextEdit/textedit.h \
-    c:/libs/PUGI/XML/pugixml.h \
+    d:\Projekte\Vendor/PUGI/XML/pugixml.h \
     dialogedittext.h \
     mainwindow.h
 

@@ -30,8 +30,8 @@ namespace global_namespace
 			{
 				if (m_XMLContainer)
 					m_XMLContainer->Unregister(this);
-			}
-		}
+            }
+        }
 
 		std::string cXMLParametrised::GetParameterText(const std::string& name) 
 		{
@@ -96,7 +96,7 @@ namespace global_namespace
         }
 
 		void cXMLParametrised::SetXML(pugi::xml_node& node)
-		{
+		{            
 			for (auto& it : cXMLParametrised::ParameterListNames())
 			{
 				auto para = node.append_child(cXMLParametrised::ParameterNode().c_str());

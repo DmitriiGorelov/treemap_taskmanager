@@ -57,7 +57,7 @@
 
 int main(int argc, char *argv[])
 {
-    Q_INIT_RESOURCE(textedit);
+    //Q_INIT_RESOURCE(textedit);
 
     QApplication a(argc, argv);
     QCoreApplication::setOrganizationName("QtProject");

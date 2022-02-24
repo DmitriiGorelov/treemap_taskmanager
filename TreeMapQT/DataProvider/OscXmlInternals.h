@@ -49,10 +49,12 @@ namespace GUI {
 		
 		//std::string ParameterNode("Parameter");
         std::string OscNode("osc");
+        std::string UserNode("user");
 
 		namespace Node {
 			enum T {
 				Osc,
+                User,
 				Parameter,
 			};
 		};
@@ -70,6 +72,7 @@ namespace GUI {
 			TNodeInit()
 			{
 				Node_Map.insert(TNode_Item(OscNode, Node::Osc));
+                Node_Map.insert(TNode_Item(UserNode, Node::User));
 				Node_Map.insert(TNode_Item(cXMLParametrised::ParameterNode(), Node::Parameter));
 			}
 		} NodeInit;

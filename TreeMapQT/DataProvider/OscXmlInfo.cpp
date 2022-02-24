@@ -116,7 +116,7 @@ namespace global_namespace {
                         pXMLParametrised osc;
                         readOsc(node, width, osc);
 						break;				
-                    }
+                    }                    
 					default:
 						XMLERROR << "unsupported node <" << (node).name() << ">";
 						throw std::string("ERROR: unsupported node <") + (node).name() + ">";
@@ -160,6 +160,14 @@ namespace global_namespace {
                     case oscxml::Node::Osc:
                         readOsc(node, width, p);
                         break;
+                    case oscxml::Node::User:
+                    {
+                        for (const auto& attr : node.attributes())
+                        {
+                            addUser(attr.as_string());
+                        }
+                        break;
+                    }
 					default:
 						XMLERROR << "node <" << node.name() << "> not supported" << std::endl;
 						break;
@@ -193,7 +201,7 @@ namespace global_namespace {
             osc->AddParameter(name,value);
 
 			return true;
-		}		
+        }
 
 		///////////////////////////////////////////////////////////////////////////////////////////////////////
 		///////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -207,8 +215,8 @@ namespace global_namespace {
 
 		bool cOscXmlInfo::modifyXml()
 		{
-			return modifyXml(m_xmlFileName);
-		}
+            return modifyXml(m_xmlFileName);
+        }
 
 		bool cOscXmlInfo::modifyXml(std::string xmlFileName)
 		{
@@ -237,10 +245,15 @@ namespace global_namespace {
 				else*/
 				{
 					clearXml();
-                    pugi::xml_node node=m_xmlTree.first_child();
+                    pugi::xml_node node=m_xmlTree.first_child();                    
                     for (auto& it_root : getRootOsc())
                     {
                         auto osc = node.append_child(oscxml::OscNode.c_str());
+                        for (auto& it : getUsers())
+                        {
+                            auto para = osc.append_child("user");
+                            para.append_attribute("n") = it.c_str();
+                        }
                         osc.append_attribute(oscxml::OscAttrUID.c_str()) = it_root->xmlName().c_str();
 
                         it_root->SetXML(osc);
@@ -260,10 +273,10 @@ namespace global_namespace {
 			}
 
 			return (m_xmlReadResult && m_xmlWriteResult);
-		}
+        }
 
         bool cOscXmlInfo::modify(pugi::xml_node& node, pXMLParametrised& it_root)
-        {
+        {                        
             for (auto& it : it_root->getChildrenOsc())
             {
                 auto osc = node.append_child(oscxml::OscNode.c_str());
