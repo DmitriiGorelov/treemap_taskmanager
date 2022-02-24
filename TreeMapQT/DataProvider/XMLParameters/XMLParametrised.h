@@ -21,6 +21,7 @@ namespace global_namespace
 	class cXMLParametrised
 		{
 		public:
+            static std::string ParameterUser() { return "user"; }
 			static std::string ParameterNode() { return "parameter"; }
 			static std::string ParameterAttrName() { return "name"; }
 			static std::string ParameterAttrValue() { return "value"; }
@@ -93,7 +94,7 @@ namespace global_namespace
 			template <typename T>
 			bool value(const std::string& name, T& result, const T& deflt, bool makeOutput = false);
 
-		private:
+        private:
 			std::string m_Name;
 			std::unordered_map<std::string, std::string> m_Value;
 			bool m_Reg;

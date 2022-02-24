@@ -40,6 +40,7 @@ SOURCES += \
     ../TreeMapQT/DataProvider/XMLParameters/XMLParametrised.cpp \
     ../TreeMapQT/DataProvider/XMLParametrisedOsc.cpp \
     ../TreeMapQT/DataProvider/li/include.cpp \
+    ../TreeMapQT/FocusedTaskPopUp.cpp \
     ../TreeMapQT/Projects.cpp \
     ../TreeMapQT/widget.cpp \
     ../TreeMapTextEdit/textedit.cpp \
@@ -61,6 +62,7 @@ HEADERS += \
     ../TreeMapQT/DataProvider/XMLParameters/XMLParametrised_Internals.h \
     ../TreeMapQT/DataProvider/XMLParametrisedOsc.h \
     ../TreeMapQT/DataProvider/li/include.h \
+    ../TreeMapQT/FocusedTaskPopUp.h \
     ../TreeMapQT/Projects.h \
     ../TreeMapQT/widget.h \
     ../TreeMapTextEdit/textedit.h \

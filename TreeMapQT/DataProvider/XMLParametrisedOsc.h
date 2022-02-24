@@ -16,6 +16,7 @@ namespace global_namespace {
             static std::string AttrNameValue() {return "value";}
             static std::string AttrNameCaption() {return "caption";}
             static std::string AttrNameText() {return "text";}
+            static std::string AttrNameUser() {return "user";}
             static std::string AttrNameSelected() {return "selected";}
             static std::string AttrNameCallbacks() {return "callbacks";}
             static std::string AttrNameColor() {return "color";}
@@ -50,6 +51,9 @@ namespace global_namespace {
 
             std::string paraText() {return cXMLParametrised::GetParameterText(AttrNameText()); }
             void paraText(const std::string& str) {return cXMLParametrised::SetParameter(AttrNameText(),str); }
+
+            std::string paraUser() {return cXMLParametrised::GetParameterText(AttrNameUser()); }
+            void paraUser(const std::string& str) {return cXMLParametrised::SetParameter(AttrNameUser(),str); }
 
             bool Selected() { return cXMLParametrised::GetParameter<bool>(AttrNameSelected(), false); }
             void Selected(bool value) { cXMLParametrised::SetParameter<bool>(AttrNameSelected(), value); }

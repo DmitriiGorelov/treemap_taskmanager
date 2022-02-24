@@ -13,7 +13,7 @@ namespace global_namespace {
 		{
 		public:
 			cOscXmlInfo(const std::string& filename);
-            ~cOscXmlInfo() { }
+            virtual ~cOscXmlInfo() { }
 
 		public:
 			bool Get_XmlFileName(std::string& FileName);
@@ -21,8 +21,7 @@ namespace global_namespace {
 			bool readXml();
 			void clearXml();
 			bool modifyXml(std::string xmlFileName);
-			bool modifyXml();
-	
+            bool modifyXml();
 		private:
 			bool read(const pugi::xml_node& node, std::string& width);
             bool modify(pugi::xml_node& node, pXMLParametrised& it_root);
@@ -30,8 +29,11 @@ namespace global_namespace {
             bool writeParameter(const pugi::xml_node& node, std::string& width);
 
             void readOsc(const pugi::xml_node& node, std::string& width, pXMLParametrised& osc);
-            bool readParameter(const pugi::xml_node& node, std::string& width, pXMLParametrised& osc);
+            bool readParameter(const pugi::xml_node& node, std::string& width, pXMLParametrised& osc);            
 		protected:
+            virtual std::list<std::string> getUsers() = 0;
+            virtual void addUser(const std::string& user) = 0;
+
             virtual pXMLParametrised AddOsc(const std::string& uid, pXMLParametrised& osc) = 0;
             virtual std::list<pXMLParametrised> getRootOsc() = 0;
 		private:
@@ -40,7 +42,7 @@ namespace global_namespace {
 			pugi::xml_parse_result	m_xmlTreeStatus;
 
 			bool m_xmlReadResult;					///< result of file reading
-			bool m_xmlWriteResult;					///< result of file writing
+			bool m_xmlWriteResult;					///< result of file writing            
 		};
 #endif
 	}

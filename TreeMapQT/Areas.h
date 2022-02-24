@@ -218,6 +218,16 @@ struct TPoint{
             cXMLParametrisedOsc::paraText(str.toStdString());
         }
 
+        QString GetUser()
+        {
+            return cXMLParametrisedOsc::paraUser().c_str();
+        }
+
+        void SetUser(const QString& str)
+        {
+            cXMLParametrisedOsc::paraUser(str.toStdString());
+        }
+
         double GetValue()
         {
             return cXMLParametrisedOsc::paraValue();
@@ -232,6 +242,8 @@ struct TPoint{
         {
             SetValue(percent*0.01*GetValue());
         }
+
+        QStringList getUsers();
 
         std::list<pXMLParametrised> getChildrenOsc() final
         {

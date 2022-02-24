@@ -55,43 +55,6 @@ private:
     std::vector<QPushButton*> m_b;
 };
 
-class cFocusedTaskPopUp : public QWidget
-{
-    Q_OBJECT
-public:
-    cFocusedTaskPopUp(QWidget *parent);
-    ~cFocusedTaskPopUp()
-    {
-
-    }
-
-    void UpdateGeometry(QPoint point, int newHeight, int parentWidth, int parentHeight);
-    void SetValueRange(int min, int max, int value);
-
-protected:
-    void resizeEvent(QResizeEvent* event) final;
-    void paintEvent(QPaintEvent* event) final {}
-
-private slots:
-    void bViewTaskClicked();
-    void bEditTaskClicked();
-    void bDeleteTaskClicked();
-    void bAddTaskClicked();
-    void sTaskVolumeChanged(int position);
-
-private:
-signals:
-    void ViewTask();
-    void EditTask();
-    void DeleteTask();
-    void AddTask();
-    void TaskVolumeChanged(int position);
-
-private:
-    std::vector<QObject*> m_b;
-    //QPushButton* m_bDeleteTask;
-};
-
 //----------------------------------------------------------------------------------------------------------------------TreeModel
 class ProjectTableModel: public QAbstractTableModel
 {
@@ -184,17 +147,12 @@ private slots:
     void AddTaskFocused();
     void TaskVolumeChanged(int percent);
 
-    // GroupButtons
-    void ViewTask();
-    void EditTask();
-    void DeleteTask();
     // TextEdit
     void TextEditBeforeClose();
 
 private:
     void ShowWindowEditTask();
     void ShowFocusedTaskPopUp(int x, int y);
-    bool HideFocusedTaskPopUp();
 
     int ButtonSize();
     void SaveLastPath(const QString &fname);
@@ -203,7 +161,7 @@ private:
 private:
     Ui::MainWindow *ui;
 
-    cFocusedTaskPopUp* m_wFocusedTaskPopUp;
+    //cFocusedTaskPopUp* m_wFocusedTaskPopUp;
 
 #if Use3dTextEdit
     TextEdit* m_wTextEdit;
