@@ -19,7 +19,7 @@ int main(int argc, char *argv[])
     backupFolder(QStandardPaths::standardLocations(QStandardPaths::HomeLocation)[0].toStdString());
     XML::XMLContainer::instance();
 
-    Widget w;
+    Widget w("");
     w.show();
     return a.exec();
 }
