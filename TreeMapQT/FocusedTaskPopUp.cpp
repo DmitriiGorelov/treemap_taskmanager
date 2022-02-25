@@ -119,12 +119,14 @@ void cFocusedTaskPopUp::resizeEvent(QResizeEvent* event)
     else
     {
         int top(0);
-        int left(width-height-1);
-        for (auto& it : m_b)
+        int left(0);
+        auto cont=m_b;
+        std::reverse(cont.begin(), cont.end());
+        for (auto& it : cont)
         {
             auto mult=(qobject_cast<QComboBox*>(it))?2:1;
             qobject_cast<QWidget*>(it)->setGeometry(left,top,height*mult,height);
-            left-=height-1;
+            left+=height*mult-1;
         }
     }
     for (auto& it : m_b)
