@@ -46,23 +46,28 @@ namespace global_namespace
     {
         result = deflt;
         std::string lowername(Cast::lower(name));
-        if (name.empty() || m_Value.find(lowername) == m_Value.end())
+        auto it = m_Value.find(lowername);
+        if (name.empty() || it == m_Value.end())
         {
             if (makeOutput)
             {
-                std::cout << "Parameter " << lowername << " not found" << std::endl;
+                lerr << "Parameter " << lowername << " not found" << std::endl;
             }
             return false;
         }
-        return false;
+
+        result = (*it).second->getDefault<T>();
+        return true;
     }
+
 
     template <typename T>
     bool cXMLParametrised::valueForKey(const std::string& name, const std::string& key, T& result, const T& deflt, bool makeOutput)
     {
         result = deflt;
         std::string lowername(Cast::lower(name));
-        if (name.empty() || m_Value.find(lowername) == m_Value.end())
+        auto it=m_Value.find(lowername);
+        if (name.empty() || it == m_Value.end())
         {
             if (makeOutput)
             {
@@ -71,14 +76,8 @@ namespace global_namespace
             return false;
         }
 
-        auto& it = m_Value[lowername];
-        /*if (it->ref()) // key value cannot be a ref
-        {
-            result = IFX::FXContainer::singleton()->GetParameter<T>(it->getValueForKey<std::string>(key), deflt);
-            return true;
-        }*/
+        result = (*it).second->getValueForKey<T>(key);
 
-        result = it->getValueForKey<T>(key);
     }
 
     template<typename keyT, typename valueT>

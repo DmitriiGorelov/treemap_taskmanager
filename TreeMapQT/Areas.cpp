@@ -498,9 +498,9 @@ qreal TArea::DrawText(QPainter& painter, qreal border)
     painter.drawStaticText(rec.topLeft().x()+border+3, rec.topLeft().y()+border, text);
     QSizeF s=text.size();
 
-    // simulate to draw UserName
+    // draw UserName
     QSizeF s2{0,0};
-    /*auto userName=paraUser();
+    auto userName=paraUser();
     if (!userName.empty())
     {
         auto c=TopLeft.y()+s.height();
@@ -510,7 +510,7 @@ qreal TArea::DrawText(QPainter& painter, qreal border)
         painter.setClipRect(rec);
         painter.drawStaticText(rec.topLeft().x()+border+3, rec.topLeft().y()+border, text);
         s2=text.size();
-    }*/
+    }
 
     return s.height()+s2.height();
 }

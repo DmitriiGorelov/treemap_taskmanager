@@ -348,14 +348,9 @@ std::list<pXMLParametrised> Widget::getRootOsc()
     return l;
 }
 
-std::list<std::string> Widget::getUsers()
+QStringList Widget::getUsers()
 {
-    std::list<std::string> all;
-    for (auto& it : m_Users)
-    {
-        all.push_back(it.toStdString().c_str());
-    }
-    return all;
+    return SelectedP()->getUsers();
 }
 
 bool Widget::SelectProject(const QString& uid)
@@ -403,9 +398,7 @@ void Widget::ShowFocusedTaskPopUp(int x, int y)
     auto min = SelectedP()->Focused()->ParentA()->Max()/10.0;
     m_wFocusedTaskPopUp->SetValueRange(min, max, focused);
 
-    QStringList all;
-    for (const auto& it: getUsers())
-        all.push_back(it.c_str());
+    QStringList all=getUsers();
     all.push_front("");
     m_wFocusedTaskPopUp->SetUsers(SelectedP()->Focused()->GetUser(), all);
 

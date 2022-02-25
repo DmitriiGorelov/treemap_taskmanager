@@ -1,5 +1,6 @@
 
 #include "XMLParametrised_Impl.h"
+#include "XMLParameterNodes.h"
 
 #include "XMLContainer.h"
 #include "../Utils/Casting.h"
@@ -117,7 +118,7 @@ namespace global_namespace
 		std::vector<std::string> cXMLParametrised::ParameterListNames()
 		{
 			std::vector<std::string> res;
-			for (auto it: m_Value)
+            for (auto& it: m_Value)
 			{
 				res.push_back(it.first);
 			}
@@ -166,10 +167,9 @@ namespace global_namespace
 		void cXMLParametrised::SetXML(pugi::xml_node& node)
 		{            
 			for (auto& it : cXMLParametrised::ParameterListNames())
-			{
-				auto para = node.append_child(cXMLParametrised::ParameterNode().c_str());
-				para.append_attribute(cXMLParametrised::ParameterAttrName().c_str()) = it.c_str();
-				para.append_attribute(cXMLParametrised::ParameterAttrValue().c_str()) = GetParameterText(it).c_str();
+			{                
+                auto parameter = GetParameterPtr(it);
+                parameter->SetXML(node, it);
 			}
 		}
 }

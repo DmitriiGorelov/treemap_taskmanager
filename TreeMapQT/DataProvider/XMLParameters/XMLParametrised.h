@@ -24,10 +24,6 @@ namespace global_namespace
 	class cXMLParametrised
 		{
         public:
-			static std::string ParameterNode() { return "parameter"; }
-			static std::string ParameterAttrName() { return "name"; }
-			static std::string ParameterAttrValue() { return "value"; }
-
 			cXMLParametrised(const std::string& _name, bool _reg);
 			virtual ~cXMLParametrised();
 

@@ -16,6 +16,9 @@
 #include <QTextDocument>
 #include <QAbstractTextDocumentLayout>
 
+#include <boost/enable_shared_from_this.hpp>
+#include <boost/shared_ptr.hpp>
+
 namespace global_namespace
 {
 
@@ -26,7 +29,7 @@ struct TPoint{
 
     using namespace GUI;
 
-    class TArea : public cUID , public cXMLParametrisedOsc
+    class TArea : public cUID , public cXMLParametrisedOsc, public boost::enable_shared_from_this<TArea>
     {
         //TArea(const TArea&&) = delete;
         TArea() = delete;
@@ -106,6 +109,8 @@ struct TPoint{
                 _value=100;
             paraValue(_value);
         }
+
+        boost::shared_ptr<TArea> GetPtr() {return shared_from_this();}
 
         void setAreas(const TAreas& areas)
         {
@@ -243,8 +248,6 @@ struct TPoint{
             SetValue(percent*0.01*GetValue());
         }
 
-        QStringList getUsers();
-
         std::list<pXMLParametrised> getChildrenOsc() final
         {
             std::list<pXMLParametrised> l;
@@ -265,6 +268,16 @@ struct TPoint{
 
         void Highlight(bool value);
         bool Highlighted();
+
+        pTArea topArea()
+        {
+            if (Areas.size()<1)
+            {
+                auto a=TArea::Create(0, GetPtr());
+                addArea(a);
+            }
+            return Areas.front();
+        }
 
     protected:
         void resetRect();

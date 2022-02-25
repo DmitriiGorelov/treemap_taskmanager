@@ -1,5 +1,6 @@
-#pragma once
+#pragma oncearameter
 
-//#define XMLParameterNode "p"
-//#define XMLParameterAttrName "n"
-//#define XMLParameterAttrValue "v"
+#define XMLNodeParameterMode "mode"
+#define XMLNodeParameter "parameter"
+#define XMLAttrName "name"
+#define XMLAttrValue "value"

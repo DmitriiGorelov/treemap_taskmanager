@@ -49,13 +49,12 @@ namespace GUI {
 		
 		//std::string ParameterNode("Parameter");
         std::string OscNode("osc");
-        std::string UserNode("user");
 
 		namespace Node {
 			enum T {
-				Osc,
-                User,
+                Osc,
 				Parameter,
+                ParameterMode,
 			};
 		};
 
@@ -71,9 +70,9 @@ namespace GUI {
 		public:
 			TNodeInit()
 			{
-				Node_Map.insert(TNode_Item(OscNode, Node::Osc));
-                Node_Map.insert(TNode_Item(UserNode, Node::User));
-				Node_Map.insert(TNode_Item(cXMLParametrised::ParameterNode(), Node::Parameter));
+                Node_Map.insert(TNode_Item(OscNode, Node::Osc));
+                Node_Map.insert(TNode_Item(XMLNodeParameter, Node::Parameter));
+                Node_Map.insert(TNode_Item(XMLNodeParameterMode, Node::ParameterMode));
 			}
 		} NodeInit;
 
@@ -134,7 +133,9 @@ namespace GUI {
 			enum T
 			{
 				Name,
-				Value
+                Value,
+
+                Illegal,
 			};
 		};
 
@@ -147,8 +148,8 @@ namespace GUI {
 		public:
 			TDeviceParameterAttr()
 			{
-				DeviceParameterAttr_Map.insert(TDeviceParameterAttr_Item(cXMLParametrised::ParameterAttrName(), ParameterAttr::Name));
-				DeviceParameterAttr_Map.insert(TDeviceParameterAttr_Item(cXMLParametrised::ParameterAttrValue(), ParameterAttr::Value));
+                DeviceParameterAttr_Map.insert(TDeviceParameterAttr_Item(XMLAttrName, ParameterAttr::Name));
+                DeviceParameterAttr_Map.insert(TDeviceParameterAttr_Item(XMLAttrValue, ParameterAttr::Value));
 			}
 		} DeviceParameterAttrInit;
 
@@ -157,8 +158,9 @@ namespace GUI {
 			TDeviceParameterAttrMap::iterator item = DeviceParameterAttr_Map.find(attr.name());
 			if (item == DeviceParameterAttr_Map.end())
 			{
-				lerr << "illegal DeviceParameter node attribute <" << attr.name() << ">";
-				throw std::string("ERROR: illegal DeviceParameter node attribute <") + attr.name() + ">";
+                //lerr << "illegal DeviceParameter node attribute <" << attr.name() << ">";
+                //throw std::string("ERROR: illegal DeviceParameter node attribute <") + attr.name() + ">";
+                return ParameterAttr::Illegal;
 			}
 			return item->second;
 		}

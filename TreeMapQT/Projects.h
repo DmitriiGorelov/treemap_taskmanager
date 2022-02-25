@@ -79,7 +79,7 @@ public:
         Select(SelectedA()->ParentA());
     }
 
-    pTArea SelectedA()
+    pTArea& SelectedA()
     {
         if (!pSelectedA)
         {
@@ -175,6 +175,8 @@ public:
             }
         }
     }
+
+    QStringList getUsers();
 
 private:
     static int counter() { static int i=1; return i++; }

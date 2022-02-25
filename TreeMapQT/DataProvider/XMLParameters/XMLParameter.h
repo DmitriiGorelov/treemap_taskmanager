@@ -1,5 +1,7 @@
 #pragma once
 
+#include "XMLParameterNodes.h"
+
 #include <iostream>
 #include <string> 
 #include <unordered_map>
@@ -74,6 +76,27 @@ namespace global_namespace
 
 		template<typename T>
 		std::tuple<std::string, T> stuple(int idx);
+
+        void SetXML(pugi::xml_node& node, const std::string& key)
+        {
+            // parameter attributes
+            auto para = node.append_child(XMLNodeParameter);
+            para.append_attribute(XMLAttrName) = key.c_str();
+            para.append_attribute(XMLAttrValue) = getDefault<std::string>().c_str();                        
+            int i(0);
+            for (auto& it : m_ValuesForKey)
+            {
+                i++;
+                auto mode = para.append_child(XMLNodeParameterMode);
+
+                mode.append_attribute(XMLAttrName) = it.first.c_str();
+
+                for (auto& val : it.second)
+                {                    
+                    mode.append_attribute((XMLAttrValue+std::to_string(i)).c_str()) = val.get<std::string>().c_str();
+                }
+            }
+        }
 
 	private:
         tUntypedValue m_Default;

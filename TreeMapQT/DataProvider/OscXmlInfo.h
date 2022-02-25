@@ -30,9 +30,8 @@ namespace global_namespace {
 
             void readOsc(const pugi::xml_node& node, std::string& width, pXMLParametrised& osc);
             bool readParameter(const pugi::xml_node& node, std::string& width, pXMLParametrised& osc);            
-		protected:
-            virtual std::list<std::string> getUsers() = 0;
-
+            void readParameterMode(const pugi::xml_node& node, std::string& width, pXMLParameter& parameter);
+        protected:
             virtual pXMLParametrised AddOsc(const std::string& uid, pXMLParametrised& osc) = 0;
             virtual std::list<pXMLParametrised> getRootOsc() = 0;
 		private:

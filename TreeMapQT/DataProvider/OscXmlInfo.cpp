@@ -148,8 +148,7 @@ namespace global_namespace {
 
 			if (p)
 			{
-				typedef pugi::xml_object_range<pugi::xml_node_iterator> TList;
-				TList list = node.children();
+                auto list = node.children();
 				for (auto& node : list)
 				{
 					switch (oscxml::to <oscxml::Node::T>(node))
@@ -175,7 +174,7 @@ namespace global_namespace {
 
 			for (const auto& attr : node.attributes())
 			{
-				oscxml::ParameterAttr::T actualAttrType = oscxml::to <oscxml::ParameterAttr::T>(attr);
+                oscxml::ParameterAttr::T actualAttrType = oscxml::to <oscxml::ParameterAttr::T>(attr);
 				switch (actualAttrType)
 				{
 					case oscxml::ParameterAttr::Value:
@@ -190,9 +189,51 @@ namespace global_namespace {
 						//break;
 				}
 			}
-            osc->AddParameter(name,value);
+            auto parameter = osc->AddParameter(name,value);
 
-			return true;
+            auto list = node.children();
+            for (auto& node : list)
+            {
+                switch (oscxml::to <oscxml::Node::T>(node))
+                {
+                case oscxml::Node::ParameterMode:
+                    readParameterMode(node, width, parameter);
+                    break;
+                default:
+                    XMLERROR << "node <" << node.name() << "> not supported" << std::endl;
+                    break;
+                }
+            }
+
+            return true;
+        }
+
+        void cOscXmlInfo::readParameterMode(const pugi::xml_node &node, std::string &width, pXMLParameter &parameter)
+        {
+            if (!parameter)
+            {
+                return;
+            }
+
+            std::string name("");
+
+            for (const auto& attr : node.attributes())
+            {
+                oscxml::ParameterAttr::T actualAttrType = oscxml::to <oscxml::ParameterAttr::T>(attr);
+                switch (actualAttrType)
+                {
+                case oscxml::ParameterAttr::Name:
+                    name = attr.as_string();
+                    break;
+                default:
+                    if (name.empty())
+                    {
+                        return;
+                    }
+                    parameter->addValueForKey(name, attr.as_string()); // we read every value, no matter which key is given
+                    break;
+                }
+            }
         }
 
 		///////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -241,11 +282,6 @@ namespace global_namespace {
                     for (auto& it_root : getRootOsc())
                     {
                         auto osc = node.append_child(oscxml::OscNode.c_str());
-                        for (auto& it : getUsers())
-                        {
-                            auto para = osc.append_child("user");
-                            para.append_attribute("n") = it.c_str();
-                        }
                         osc.append_attribute(oscxml::OscAttrUID.c_str()) = it_root->xmlName().c_str();
 
                         it_root->SetXML(osc);
