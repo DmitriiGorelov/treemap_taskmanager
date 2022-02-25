@@ -4,12 +4,15 @@
 #include <string> 
 #include <unordered_map>
 #include <vector>
-#include <list>
 #include <boost/lexical_cast.hpp>
 
 #include <boost/enable_shared_from_this.hpp>
 #include <boost/shared_ptr.hpp>
 #include <XML/pugixml.h>
+
+#include "XMLParameter.h"
+
+#include "XMLParameterNodes.h"
 
 namespace global_namespace
 {
@@ -20,8 +23,7 @@ namespace global_namespace
 
 	class cXMLParametrised
 		{
-		public:
-            static std::string ParameterUser() { return "user"; }
+        public:
 			static std::string ParameterNode() { return "parameter"; }
 			static std::string ParameterAttrName() { return "name"; }
 			static std::string ParameterAttrValue() { return "value"; }
@@ -29,7 +31,10 @@ namespace global_namespace
 			cXMLParametrised(const std::string& _name, bool _reg);
 			virtual ~cXMLParametrised();
 
-			void AddParameter(const std::string& name, const std::string& val);
+            boost::shared_ptr<cXMLParameter> AddParameter(const std::string& name, const std::string& val);
+
+            boost::shared_ptr<cXMLParameter> GetParameterPtr(const std::string& name);
+            void SetParameterPtr(const std::string& name, boost::shared_ptr<cXMLParameter> ptr);
 
 			std::string GetParameterText(const std::string& name);
 
@@ -39,6 +44,9 @@ namespace global_namespace
 			template <typename T>
 			T GetParameter(const std::string& name, T deflt);
 
+            template <typename T>
+            T GetParameter(const std::string& name, const std::string& key, T deflt);
+
 			template <typename T>
 			void SetParameter(const std::string& name, T val);
 
@@ -46,57 +54,45 @@ namespace global_namespace
 
 			std::vector<std::string> ParameterListNames();
 
-			std::string xmlName();
+            size_t GetParameterMapSize(const std::string& name, bool makeOutput = false);
+
+            template<typename keyT, typename valueT>
+            std::tuple<keyT, valueT> GetParameterMapValueByIndex(const std::string& name, int idx, bool makeOutput=false);
+
+            template<typename keyT, typename... valueT>
+            bool GetParameterMapVectorByIndex(const std::string& name, int idx, keyT& key, valueT&... values);
+
+            std::string xmlName() const;
 
 			virtual void ApplyDefaultParameters(){}
 
 			void SetXML(pugi::xml_node& node);
 
+            bool operator <(const cXMLParametrised& b)
+            {
+                return m_Name < b.m_Name;
+            }
+
+            bool operator<(cXMLParametrised* b) const
+            {
+                return m_Name < b->m_Name;
+            }
+
             virtual std::list<boost::shared_ptr<cXMLParametrised>> getChildrenOsc() {return std::list<boost::shared_ptr<cXMLParametrised>>();}
 
 		protected:
 			virtual void ParameterChangedCallback(const std::string& name, const std::string& val);
-		private:
-			/*bool value(const std::string& name, std::string& result, const std::string& deflt, bool makeOutput = false)
-			{
-				result = deflt;
-
-				if (name.empty() || m_Value.find(lower(name)) == m_Value.end())
-				{
-					if (makeOutput)
-					{
-						std::cerr << "Parameter " << lower(name) << " not found" << std::endl;
-					}
-					return false;
-				}
-
-				try
-				{
-					std::string value(m_Value[lower(name)]);
-
-					if (value.empty())
-					{
-						return false;
-					}
-					result = value;
-					return true;
-				}
-				catch (...)
-				{
-					std::cerr << "Lexical cast error of " << name << std::endl;
-					return false;
-				}
-				return false;
-			}*/
-
-            std::string CheckReference(const std::string& value);
+        private:
 
 			template <typename T>
 			bool value(const std::string& name, T& result, const T& deflt, bool makeOutput = false);
 
+            template <typename T>
+            bool valueForKey(const std::string& name, const std::string& key, T& result, const T& deflt, bool makeOutput = false);
+
         private:
 			std::string m_Name;
-			std::unordered_map<std::string, std::string> m_Value;
+            std::unordered_map<std::string, boost::shared_ptr<cXMLParameter> > m_Value;
 			bool m_Reg;
 			boost::shared_ptr<XML::cXMLContainer> m_XMLContainer;
 		};

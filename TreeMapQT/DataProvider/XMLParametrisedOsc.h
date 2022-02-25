@@ -1,7 +1,7 @@
 #pragma once
 
 #include "XMLParameters/XMLParametrised.h"
-#include "XMLParameters/XMLParametrised_Internals.h"
+#include "XMLParameters/XMLParametrised_Impl.h"
 #include "li/include.h"
 //#include <XML/pugixml.h>
 #include <boost/smart_ptr.hpp>

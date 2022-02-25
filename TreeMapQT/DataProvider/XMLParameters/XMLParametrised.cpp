@@ -1,9 +1,14 @@
 
-#include "XMLParametrised_Internals.h"
+#include "XMLParametrised_Impl.h"
 
 #include "XMLContainer.h"
-
 #include "../Utils/Casting.h"
+
+#include <algorithm>    // std::sort
+
+#include <boost/smart_ptr.hpp>
+
+
 
 namespace global_namespace
 {
@@ -35,25 +40,69 @@ namespace global_namespace
 
 		std::string cXMLParametrised::GetParameterText(const std::string& name) 
 		{
-			if (name.empty() || m_Value.find(lower(name)) == m_Value.end())
+			auto it = m_Value.find(Cast::lower(name));
+			if (name.empty() || it == m_Value.end())
 			{				
 				return "";
 			}						
+			
+			return (*it).second->getDefault<std::string>();
+		}		
 
-			return m_Value[lower(name)];
-		}
-
-		void cXMLParametrised::AddParameter(const std::string& name, const std::string& val)
+        boost::shared_ptr<cXMLParameter> cXMLParametrised::AddParameter(const std::string& name, const std::string& val)
 		{
-			if (name.empty())
+			std::string lowername = Cast::lower(name);
+
+			if (lowername.empty())
 			{
-				return;
+                std::cout << "Parameter <> not created!" << std::endl;
+
+				return boost::make_shared<cXMLParameter>();
 			}			
+			
+			auto it = m_Value.find(lowername);
+			if (it == m_Value.end())
+			{
+                m_Value[lowername] = boost::make_shared<cXMLParameter>(val);
+                it = m_Value.find(lowername);
+			}
+			else
+				(*it).second->setDefault(val);			
 
-			m_Value[lower(name)] = val;
+			ParameterChangedCallback(lowername, val);
 
-			ParameterChangedCallback(lower(name), val);
+			return (*it).second;
 		}
+
+        boost::shared_ptr<cXMLParameter> cXMLParametrised::GetParameterPtr(const std::string& name)
+        {
+            std::string lowername = Cast::lower(name);
+
+            if (lowername.empty())
+            {
+                std::cout << "Parameter <> not created!" << std::endl;
+
+                return boost::make_shared<cXMLParameter>();
+            }
+
+            auto it = m_Value.find(lowername);
+
+            return (it != m_Value.end() ? m_Value[lowername] : nullptr);
+        }
+
+        void cXMLParametrised::SetParameterPtr(const std::string& name, boost::shared_ptr<cXMLParameter> ptr)
+        {
+            std::string lowername = Cast::lower(name);
+
+            if (lowername.empty())
+            {
+                std::cout << "Parameter <> not created!" << std::endl;
+
+                return;
+            }
+
+            m_Value[lowername] = ptr;
+        }
 
 		void cXMLParametrised::SetParameter(const std::string& name, std::string val)
 		{
@@ -73,27 +122,46 @@ namespace global_namespace
 				res.push_back(it.first);
 			}
 
+            std::sort(res.begin(),res.end());
+
 			return res;
 		}
 
-		std::string cXMLParametrised::xmlName()
+        size_t cXMLParametrised::GetParameterMapSize(const std::string& name, bool makeOutput)
+        {
+            std::string lowername(Cast::lower(name));
+            if (lowername.empty() || m_Value.find(lowername) == m_Value.end())
+            {
+                if (makeOutput)
+                {
+                    std::cout << "Parameter " << lowername << " not found" << std::endl;
+                }
+                return 0;
+            }
+
+            return m_Value[lowername]->size();
+        }
+
+        template<>
+        std::tuple<std::string, std::string> cXMLParametrised::GetParameterMapValueByIndex(const std::string& name, int idx, bool makeOutput)
+        {
+            std::string lowername(Cast::lower(name));
+            if (lowername.empty() || m_Value.find(lowername) == m_Value.end())
+            {
+                if (makeOutput)
+                {
+                    std::cout << "Parameter " << lowername << " not found" << std::endl;
+                }
+                return std::make_tuple("","");
+            }
+
+            return m_Value[lowername]->stuple<std::string>(idx);
+        }
+
+        std::string cXMLParametrised::xmlName() const
 		{
 			return m_Name;
 		}
-
-        static std::string refPrefix = "ref.";
-
-        std::string cXMLParametrised::CheckReference(const std::string& value)
-		{
-			std::size_t pos = value.find(refPrefix.c_str());
-			if (pos == 0)
-            {
-                throw "ref. not supported in cXMLParametrised";
-                //return IFX::IFXContainer::singleton()->GetParameterText(value.substr(refPrefix.length()));
-			}
-			
-			return value;
-        }
 
 		void cXMLParametrised::SetXML(pugi::xml_node& node)
 		{            

@@ -3,7 +3,7 @@
 #include <boost/make_shared.hpp>
 
 #include "XMLParametrised.h"
-#include "XMLParametrised_Internals.h"
+//#include "XMLParametrised_Impl.h"
 
 namespace global_namespace{
 //namespace gmas {

@@ -1,7 +1,7 @@
 #include "Casting.h"
 
 #include <boost/lexical_cast.hpp>
-#include <boost/algorithm/string.hpp>
+#include <boost/algorithm/string.hpp>  
 
 bool is_int(const std::string& str)
 {
@@ -16,47 +16,9 @@ bool is_int(const std::string& str)
 	return true;
 }
 
-bool is_float(const std::string& str)
+bool Cast::is_float(const std::string& str)
 {
-	try
-	{
-		float value = boost::lexical_cast<float>(str);
-	}
-	catch (...)
-	{
-		return false;
-	}
-	return true;
-}
-
-bool is_double(const std::string& str)
-{
-	try
-	{
-		double value = boost::lexical_cast<double>(str);
-	}
-	catch (...)
-	{
-		return false;
-	}
-	return true;
-}
-
-bool is_int(const std::string& str, int& value)
-{
-	try
-	{
-		value = boost::lexical_cast<int>(str);		
-	}
-	catch (...)
-	{
-		return false;
-	}
-	return true;
-}
-
-bool is_float(const std::string& str, float& value)
-{
+	static float value(0.0);
 	try
 	{
 		value = boost::lexical_cast<float>(str);
@@ -68,8 +30,9 @@ bool is_float(const std::string& str, float& value)
 	return true;
 }
 
-bool is_double(const std::string& str, double& value)
+bool Cast::is_double(const std::string& str)
 {
+	static double value(0.0);
 	try
 	{
 		value = boost::lexical_cast<double>(str);
@@ -81,36 +44,34 @@ bool is_double(const std::string& str, double& value)
 	return true;
 }
 
-double to_double(const std::string& str)
+double Cast::to_double(const std::string& str)
 {
-	static double result(0.0);
 	try
 	{
-		result = boost::lexical_cast<double>(str);
+		return boost::lexical_cast<double>(str);
 	}
 	catch (...)
 	{
-		result = 0.0;
+		return 0.0;
 	}
-	return result;
+	return 0.0;
 }
 
-int to_int(const std::string& str)
+int Cast::to_int(const std::string& str)
 {
-	static int result(0.0);
 	try
 	{
-		result = boost::lexical_cast<int>(str);
+		return boost::lexical_cast<int>(str);
 	}
 	catch (...)
 	{
-		result = 0;
+		return 0;
 	}
-	return result;
+	return 0;
 }
 
 
-std::string lower(const std::string& name) 
+std::string Cast::lower(const std::string& name)
 {
 	return boost::algorithm::to_lower_copy(name);
 }

@@ -63,7 +63,6 @@ protected:
     virtual pXMLParametrised AddOsc(const std::string& uid, pXMLParametrised& osc) final;
     virtual std::list<pXMLParametrised> getRootOsc() final;
     virtual std::list<std::string> getUsers() final;
-    virtual void addUser(const std::string& user) final;
 
 private:
     void ShowFocusedTaskPopUp(int x, int y);

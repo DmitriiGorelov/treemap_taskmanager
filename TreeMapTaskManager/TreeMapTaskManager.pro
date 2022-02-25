@@ -35,8 +35,10 @@ SOURCES += \
     ../TreeMapQT/DataProvider/OscXmlData.cpp \
     ../TreeMapQT/DataProvider/OscXmlInfo.cpp \
     ../TreeMapQT/DataProvider/Utils/Casting.cpp \
+    ../TreeMapQT/DataProvider/Utils/UntypedValue/UntypedValue.cpp \
     ../TreeMapQT/DataProvider/Utils/logMem.cpp \
     ../TreeMapQT/DataProvider/XMLParameters/XMLContainer.cpp \
+    ../TreeMapQT/DataProvider/XMLParameters/XMLParameter.cpp \
     ../TreeMapQT/DataProvider/XMLParameters/XMLParametrised.cpp \
     ../TreeMapQT/DataProvider/XMLParametrisedOsc.cpp \
     ../TreeMapQT/DataProvider/li/include.cpp \
@@ -55,10 +57,16 @@ HEADERS += \
     ../TreeMapQT/DataProvider/OscXmlInfo.h \
     ../TreeMapQT/DataProvider/OscXmlInternals.h \
     ../TreeMapQT/DataProvider/Utils/Casting.h \
+    ../TreeMapQT/DataProvider/Utils/UntypedValue/UntypedValue.h \
+    ../TreeMapQT/DataProvider/Utils/UntypedValue/UntypedValue_Impl.h \
     ../TreeMapQT/DataProvider/Utils/logMem.h \
     ../TreeMapQT/DataProvider/XMLParameters/XMLContainer.h \
+    ../TreeMapQT/DataProvider/XMLParameters/XMLParameter.h \
+    ../TreeMapQT/DataProvider/XMLParameters/XMLParameterNodes.h \
+    ../TreeMapQT/DataProvider/XMLParameters/XMLParameter_Impl.h \
     ../TreeMapQT/DataProvider/XMLParameters/XMLParametrised.h \
     ../TreeMapQT/DataProvider/XMLParameters/XMLParametrisedAddon.h \
+    ../TreeMapQT/DataProvider/XMLParameters/XMLParametrised_Impl.h \
     ../TreeMapQT/DataProvider/XMLParameters/XMLParametrised_Internals.h \
     ../TreeMapQT/DataProvider/XMLParametrisedOsc.h \
     ../TreeMapQT/DataProvider/li/include.h \

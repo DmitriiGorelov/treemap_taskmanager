@@ -358,11 +358,6 @@ std::list<std::string> Widget::getUsers()
     return all;
 }
 
-void Widget::addUser(const std::string &user)
-{
-    m_Users.push_back(user.c_str());
-}
-
 bool Widget::SelectProject(const QString& uid)
 {
     for (auto& it : Projects)

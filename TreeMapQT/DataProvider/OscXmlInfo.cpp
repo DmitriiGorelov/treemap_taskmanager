@@ -160,14 +160,6 @@ namespace global_namespace {
                     case oscxml::Node::Osc:
                         readOsc(node, width, p);
                         break;
-                    case oscxml::Node::User:
-                    {
-                        for (const auto& attr : node.attributes())
-                        {
-                            addUser(attr.as_string());
-                        }
-                        break;
-                    }
 					default:
 						XMLERROR << "node <" << node.name() << "> not supported" << std::endl;
 						break;

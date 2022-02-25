@@ -2,7 +2,7 @@
 #pragma once
 
 #include "XMLParametrised.h"
-#include "XMLParametrised_Internals.h"
+//#include "XMLParametrised_Impl.h"
 
 #include <boost/weak_ptr.hpp>
 
