@@ -36,6 +36,7 @@ private slots:
     void bViewTaskClicked();
     void bEditTaskClicked();
     void bDeleteTaskClicked();
+    void bTaskColorClicked();
     void bAddTaskClicked();
     void sTaskVolumeChanged(int position);
     void sUserOfTaskChanged(const QString &);
@@ -46,6 +47,7 @@ signals:
     void EditTask();
     void DeleteTask();
     void AddTask();
+    void ColorTask(QColor col);
     void TaskVolumeChanged(int position);
     void UserOfTaskChanged(const QString);
 

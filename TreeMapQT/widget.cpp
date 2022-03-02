@@ -78,11 +78,11 @@ void Widget::AddProject(const QString& caption)
 void Widget::AddTaskSelected()
 {
     if (SelectedP())
-    {
+    {        
         SelectedP()->AddTaskSelected(1.001);
         WriteXML();
 
-        m_NeedCalculate=true;
+        m_NeedCalculate=true;        
         repaint();
     }
 }
@@ -91,10 +91,11 @@ void Widget::AddTaskFocused()
 {
     if (SelectedP())
     {
+        SelectedP()->Focused()->Highlight(false);
         SelectedP()->AddTaskFocused(1.001);
-        WriteXML();
+        WriteXML();                
 
-        m_NeedCalculate=true;
+        m_NeedCalculate=true;        
         repaint();
     }
 }
@@ -167,7 +168,7 @@ void Widget::paintEvent(QPaintEvent *event)
 
     QPainter painter(this);
     painter.setBrush(QBrush(Qt::white));
-    painter.setPen(QPen(Qt::red, 1, Qt::SolidLine, Qt::RoundCap));
+    painter.setPen(QPen(Qt::green, 1, Qt::SolidLine, Qt::RoundCap));
     painter.setBrush(QBrush(Qt::white, Qt::SolidPattern));
     painter.drawRect(0,0, this->width()-1, this->height()-1);
 
@@ -384,6 +385,7 @@ void Widget::ShowFocusedTaskPopUp(int x, int y)
         m_wFocusedTaskPopUp=new cFocusedTaskPopUp(this);
         connect(m_wFocusedTaskPopUp, &cFocusedTaskPopUp::EditTask, this, &Widget::EditTask);
         connect(m_wFocusedTaskPopUp, &cFocusedTaskPopUp::DeleteTask, this, &Widget::DeleteTask);
+        connect(m_wFocusedTaskPopUp, &cFocusedTaskPopUp::ColorTask, this, &Widget::ColorizedTask);
         connect(m_wFocusedTaskPopUp, &cFocusedTaskPopUp::ViewTask, this, &Widget::ViewTask);
         connect(m_wFocusedTaskPopUp, &cFocusedTaskPopUp::AddTask, this, &Widget::AddTaskFocused);
         connect(m_wFocusedTaskPopUp, &cFocusedTaskPopUp::TaskVolumeChanged, this, &Widget::TaskVolumeChanged);
@@ -422,6 +424,7 @@ bool Widget::HideFocusedTaskPopUp()
         result = m_wFocusedTaskPopUp->isVisible();
         m_wFocusedTaskPopUp->hide();
     }
+    SelectedP()->Focused()->Highlight(false);
     repaint();
     return result;
 }
@@ -451,6 +454,10 @@ void Widget::TextEditBeforeClose()
     {
         SetFocusedText(m_wTextEdit->GetContent());
     }
+
+    SelectedP()->Focused()->Highlight(false);
+    repaint();
+
 }
 
 void Widget::ShowWindowEditTask()
@@ -499,4 +506,10 @@ void Widget::DeleteTask()
 {
     HideFocusedTaskPopUp();
     DeleteFocused();
+}
+
+void Widget::ColorizedTask(QColor col)
+{
+    if (SelectedP()->Focused())
+        SelectedP()->Focused()->SetColor(col);
 }

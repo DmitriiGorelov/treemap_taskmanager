@@ -10,6 +10,7 @@
 #include "UID.h"
 #include "DataProvider/XMLParametrisedOsc.h"
 #include <QString>
+#include <QColor>
 #include <QPainter>
 #include <QPoint>
 #include <QStaticText>
@@ -241,6 +242,18 @@ struct TPoint{
         void SetValue(double value)
         {
             cXMLParametrisedOsc::paraValue(value);
+        }
+
+        QColor GetColor()
+        {
+            QColor col;
+            col.setNamedColor(QString(cXMLParametrisedOsc::paraColor().c_str()));
+            return col;
+        }
+
+        void SetColor(QColor value)
+        {
+            cXMLParametrisedOsc::paraColor(value.name().toStdString());
         }
 
         void ScaleValue(int percent)

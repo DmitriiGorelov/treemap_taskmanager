@@ -1,5 +1,7 @@
 #include "FocusedTaskPopUp.h"
 
+#include <QColorDialog>
+
 cFocusedTaskPopUp::cFocusedTaskPopUp(QWidget *parent)
     : QWidget(parent)
     , m_b()
@@ -24,12 +26,12 @@ cFocusedTaskPopUp::cFocusedTaskPopUp(QWidget *parent)
         b->setIcon(QIcon(QPixmap(":/task/images/add.png")));
     }
 
-    {
+    /*{
         QPushButton* b = new QPushButton(this);
         m_b.push_back(b);
         connect(b, &QPushButton::clicked,this, &cFocusedTaskPopUp::bViewTaskClicked);
         b->setIcon(QIcon(QPixmap(":/task/images/browser.png")));
-    }
+    }*/
 
     {
         QSlider* b = new QSlider(this);
@@ -47,6 +49,13 @@ cFocusedTaskPopUp::cFocusedTaskPopUp(QWidget *parent)
         QComboBox* b = new QComboBox(this);
         m_b.push_back(b);        
         connect(b, &QComboBox::currentTextChanged,this, &cFocusedTaskPopUp::sUserOfTaskChanged);
+    }
+
+    {
+        QPushButton* b=new QPushButton(this);
+        m_b.push_back(b);
+        connect(b, &QPushButton::clicked, this, &cFocusedTaskPopUp::bTaskColorClicked);
+        b->setIcon(QIcon(QPixmap(":/task/images/color.png")));
     }
 }
 
@@ -155,6 +164,14 @@ void cFocusedTaskPopUp::bDeleteTaskClicked()
 void cFocusedTaskPopUp::bAddTaskClicked()
 {
     emit AddTask();
+}
+
+void cFocusedTaskPopUp::bTaskColorClicked()
+{
+    QColor col = QColorDialog::getColor(Qt::white, this);
+    if (!col.isValid())
+        return;
+    emit ColorTask(col);
 }
 
 void cFocusedTaskPopUp::sTaskVolumeChanged(int position)

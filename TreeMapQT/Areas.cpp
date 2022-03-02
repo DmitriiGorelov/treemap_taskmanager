@@ -14,7 +14,7 @@ namespace global_namespace
 class TData {
 public:
     TData(pTArea _area)
-		: area(_area)
+        : area(_area)
 	{
 
 	}
@@ -533,8 +533,8 @@ void TArea::Paint(QPainter& painter, int level)
     }
     else
     {
-        painter.setPen(QPen(Qt::red, l, Qt::SolidLine, Qt::RoundCap));
-        painter.setBrush(QBrush(Qt::GlobalColor(paraColor()), Qt::SolidPattern));
+        painter.setPen(QPen(Qt::darkGray, l, Qt::SolidLine, Qt::RoundCap));
+        painter.setBrush(QBrush(GetColor(), Qt::SolidPattern));
     }
 
     painter.setClipRect(rect());

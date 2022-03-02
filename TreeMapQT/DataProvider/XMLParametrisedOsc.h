@@ -60,8 +60,8 @@ namespace global_namespace {
             bool Callbacks();
             void Callbacks(bool value);
 
-            int paraColor();
-            void paraColor(int value);
+            std::string paraColor();
+            void paraColor(std::string value);
 
             void setXML(pugi::xml_node& node);
 

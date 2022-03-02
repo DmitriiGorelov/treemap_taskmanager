@@ -76,6 +76,7 @@ private slots:
     void ViewTask();
     void EditTask();
     void DeleteTask();
+    void ColorizedTask(QColor col);
 
     void TextEditBeforeClose();
     void TaskVolumeChanged(int percent);

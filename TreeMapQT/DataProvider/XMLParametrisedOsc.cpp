@@ -27,16 +27,14 @@ namespace global_namespace {
     bool cXMLParametrisedOsc::Callbacks() { return cXMLParametrised::GetParameter<bool>(AttrNameCallbacks(), false); }
     void cXMLParametrisedOsc::Callbacks(bool value) { cXMLParametrised::SetParameter<bool>(AttrNameCallbacks(), value); }
 
-    int cXMLParametrisedOsc::paraColor() { return cXMLParametrised::GetParameter<int>(AttrNameColor(), 3); }
-    void cXMLParametrisedOsc::paraColor(int value) { cXMLParametrised::SetParameter<int>(AttrNameColor(), value); }
+    std::string cXMLParametrisedOsc::paraColor() { return cXMLParametrised::GetParameter<std::string>(AttrNameColor(), "#ffffff"); }
+    void cXMLParametrisedOsc::paraColor(std::string value) { cXMLParametrised::SetParameter<std::string>(AttrNameColor(), value); }
 
     void cXMLParametrisedOsc::setXML(pugi::xml_node& node) { cXMLParametrised::SetXML(node); }
 
 //protected:
     std::string cXMLParametrisedOsc::Selected_str() { return (cXMLParametrised::GetParameter<bool>(AttrNameSelected(), false)) ? "1" : "0"; }
     std::string cXMLParametrisedOsc::Callbacks_str() { return (cXMLParametrised::GetParameter<bool>(AttrNameCallbacks(), false)) ? "1" : "0"; }
-    std::string cXMLParametrisedOsc::Color_str() { return to_str::get<int>(cXMLParametrised::GetParameter<int>(AttrNameColor(), (rand() % 255 + 1))); }
-
 
 #endif
 	}
