@@ -1,4 +1,4 @@
-#pragma oncearameter
+#pragma once
 
 #define XMLNodeParameterMode "mode"
 #define XMLNodeParameter "parameter"

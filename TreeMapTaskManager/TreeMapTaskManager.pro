@@ -67,7 +67,6 @@ HEADERS += \
     ../TreeMapQT/DataProvider/XMLParameters/XMLParametrised.h \
     ../TreeMapQT/DataProvider/XMLParameters/XMLParametrisedAddon.h \
     ../TreeMapQT/DataProvider/XMLParameters/XMLParametrised_Impl.h \
-    ../TreeMapQT/DataProvider/XMLParameters/XMLParametrised_Internals.h \
     ../TreeMapQT/DataProvider/XMLParametrisedOsc.h \
     ../TreeMapQT/DataProvider/li/include.h \
     ../TreeMapQT/FocusedTaskPopUp.h \
