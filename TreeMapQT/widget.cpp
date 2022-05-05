@@ -424,7 +424,9 @@ bool Widget::HideFocusedTaskPopUp()
         result = m_wFocusedTaskPopUp->isVisible();
         m_wFocusedTaskPopUp->hide();
     }
-    SelectedP()->Focused()->Highlight(false);
+    if (SelectedP()->Focused())
+        SelectedP()->Focused()->Highlight(false);
+
     repaint();
     return result;
 }
