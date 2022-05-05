@@ -471,13 +471,18 @@ inline int wid(int level)
     }
 }
 
-QString colorizeText(const char* text)
+QString colorizeText(const char* text, QColor col)
 {
+    //auto colorString=QString("%1").arg(QColor(col).rgb(), 6, 16);
+    auto colorString=col.name().remove("#");
+
     QString result = R"bracket(<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN" "http://www.w3.org/TR/REC-html40/strict.dtd">
 <html><head><meta name="qrichtext" content="1" /><style type="text/css">
 p, li { white-space: pre-wrap; }
 </style></head><body style=" font-family:'Helvetica'; font-size:8.25pt; font-weight:400; font-style:normal;">
-<p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"><span style=" color:#ff0000;">
+<p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"><span style=" color:#)bracket"+
+colorString+
+R"bracket(;">
 )bracket";
     result+=text;
     result+="</span></p></body></html>";
@@ -486,33 +491,49 @@ p, li { white-space: pre-wrap; }
 
 qreal TArea::DrawText(const QRectF& rect, QPainter& painter, qreal border)
 {
-    QRectF rec = QRectF(rect.topLeft(), QSizeF(rect.bottomRight().x()-rect.topLeft().x(), rect.bottomRight().y()-rect.topLeft().y()-2*border));
+    //QRectF rec = QRectF(rect.topLeft(), QSizeF(rect.bottomRight().x()-rect.topLeft().x(), rect.bottomRight().y()-rect.topLeft().y()-2*border));
 
     painter.setPen(Qt::black);
     QStaticText text;
-    text.setTextWidth(rec.width()-2*border-6);
-    qInfo() << "-------------------------------------------------";
-    qInfo() << paraText().c_str();
+    text.setTextWidth(rect.bottomRight().y()-rect.topLeft().y()-2*border-6/*rec.width()-2*border-6*/);
+    //qInfo() << "-------------------------------------------------";
+    //qInfo() << paraText().c_str();
+
+    // draw prefix
+    QSizeF s0{0,0};
+    if (!m_Prefix.isEmpty())
+    {
+        auto rec0 = QRectF(QPointF(TopLeft.x(), TopLeft.y()), QSizeF(BottomRight.x()-TopLeft.x(), BottomRight.y()-TopLeft.y()-2*border));
+        painter.setPen(Qt::black);
+        text.setText(colorizeText(m_Prefix.toStdString().c_str(), Qt::blue).toStdString().c_str());
+        painter.setClipRect(rec0);
+        painter.drawStaticText(rec0.topLeft().x()+border+3, rec0.topLeft().y()+border, text);
+        s0=text.size();
+    }
+
+    // draw paraText
+    auto c=TopLeft.y()+s0.height();
+    auto rec1 = QRectF(QPointF(TopLeft.x(), c), QSizeF(BottomRight.x()-TopLeft.x(), BottomRight.y()-c-2*border));
     text.setText(paraText().c_str());
-    painter.setClipRect(rec);
-    painter.drawStaticText(rec.topLeft().x()+border+3, rec.topLeft().y()+border, text);
-    QSizeF s=text.size();
+    painter.setClipRect(rec1);
+    painter.drawStaticText(rec1.topLeft().x()+border+3, rec1.topLeft().y()+border, text);
+    QSizeF s1=text.size();
 
     // draw UserName
     QSizeF s2{0,0};
     auto userName=paraUser();
     if (!userName.empty())
     {
-        auto c=TopLeft.y()+s.height();
-        rec = QRectF(QPointF(TopLeft.x(), c), QSizeF(BottomRight.x()-TopLeft.x(), BottomRight.y()-c-2*border));
+        auto c=TopLeft.y()+s1.height();
+        auto rec2 = QRectF(QPointF(TopLeft.x(), c), QSizeF(BottomRight.x()-TopLeft.x(), BottomRight.y()-c-2*border));
         painter.setPen(Qt::black);
-        text.setText(colorizeText(paraUser().c_str()).toStdString().c_str());
-        painter.setClipRect(rec);
-        painter.drawStaticText(rec.topLeft().x()+border+3, rec.topLeft().y()+border, text);
+        text.setText(colorizeText(userName.c_str(), Qt::red).toStdString().c_str());
+        painter.setClipRect(rec2);
+        painter.drawStaticText(rec2.topLeft().x()+border+3, rec2.topLeft().y()+border, text);
         s2=text.size();
     }
 
-    return s.height()+s2.height();
+    return s0.height()+s1.height()+s2.height();
 }
 
 void TArea::Paint(QPainter& painter, int level)
@@ -577,8 +598,10 @@ void TArea::resetRect()
     }
 }
 
-void TArea::Calculate(QRectF rect, int level)
+void TArea::Calculate(const QString& prefix, size_t index, QRectF rect, int level)
 {
+    m_Prefix=prefix;
+
     TopLeft=rect.topLeft();
     TopRight=rect.topRight();
     BottomLeft=rect.bottomLeft();
@@ -785,10 +808,17 @@ void TArea::Calculate(QRectF rect, int level)
         }
     }
 
+    QString prefixNext("");
+    int indexNext=0;
     level++;
     for (auto& it : Areas)
     {
-        it->Calculate(it->rect(), level);
+        indexNext++;
+
+        if (rows>0)
+            prefixNext=QString::number(indexNext);
+
+        it->Calculate(prefixNext, indexNext, it->rect(), level);
     }
 }
 

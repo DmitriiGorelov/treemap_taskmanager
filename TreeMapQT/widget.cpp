@@ -172,7 +172,7 @@ void Widget::paintEvent(QPaintEvent *event)
     {
         if (m_NeedCalculate)
         {
-            SelectedP()->SelectedA()->Calculate(QRectF(0,0,this->width(), this->height()));
+            SelectedP()->SelectedA()->Calculate("",1,QRectF(0,0,this->width(), this->height()));
         }
 
         SelectedP()->SelectedA()->Paint(painter);

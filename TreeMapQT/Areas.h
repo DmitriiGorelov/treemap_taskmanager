@@ -61,6 +61,7 @@ struct TPoint{
             , Areas()
             , pParentArea(parent)
             , m_Highlight(false)
+            , m_Prefix("")
         {
             paraValue(100);
         }
@@ -75,6 +76,7 @@ struct TPoint{
             , Areas()
             , pParentArea(parent)
             , m_Highlight(false)
+            , m_Prefix("")
         {
             if (_value==0.0)
                 _value=100;
@@ -289,7 +291,7 @@ struct TPoint{
             return QRectF(TopLeft,BottomRight);
         }
 
-        void Calculate(QRectF rect, int level=0);
+        void Calculate(const QString& prefix, size_t index, QRectF rect, int level=0);
         void Paint(QPainter& painter, int level=0);
 
         void Highlight(bool value);
@@ -322,6 +324,8 @@ struct TPoint{
         boost::weak_ptr<TArea> pParentArea;
 
         bool m_Highlight;
+
+        QString m_Prefix;
     };
 
     typedef TArea::pTArea pTArea;
