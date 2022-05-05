@@ -17,16 +17,12 @@ Widget::Widget(const QString& fname, QWidget *parent)
     , Projects()
     , pSelectedP(nullptr)
     , m_mousePressPoint(0,0)
-    , m_mousePressStarted()
-    , m_mousePressTimer(Q_NULLPTR)
+    , m_mouseReleasePoint(0,0)
     , m_NeedCalculate(true)
     , m_bMousePressed(false)
     , m_wFocusedTaskPopUp(Q_NULLPTR)
 {
     ui->setupUi(this);
-
-    m_mousePressTimer=new QTimer(this);
-    connect(m_mousePressTimer, &QTimer::timeout, this, &Widget::MousePressTimer);
 
     ReadXML();
 }
@@ -186,136 +182,64 @@ void Widget::paintEvent(QPaintEvent *event)
 
 }
 
+void Widget::contextMenuEvent(QContextMenuEvent *event)
+{
+    m_mousePressPoint = event->pos();
+
+    if (SelectedP()->CanFocus(m_mousePressPoint))
+    {
+        auto ptr = SelectedP()->Focus(m_mousePressPoint);
+
+        if (ptr)
+        {
+            ptr->Highlight(true);
+            repaint();
+            ShowFocusedTaskPopUp(m_mousePressPoint);
+        }
+    }
+}
+
 void Widget::mousePressEvent(QMouseEvent *event)
 {
-    m_bMousePressed = true;
+    HideFocusedTaskPopUp();
 
-    m_mousePressTimer->stop();
-    m_mousePressPoint = event->pos();
-    SelectedP()->Focus(m_mousePressPoint.x(), m_mousePressPoint.y());
-    m_mousePressStarted = QTime::currentTime();
+    if (event->button() == Qt::MouseButton::LeftButton)
+    {
+        m_bMousePressed = true;
 
-    bool canContinue(true);
-    emit MousePressed(m_mousePressPoint.x(), m_mousePressPoint.y(), canContinue);
-
-#ifndef Q_OS_ANDROID
-    if (canContinue)
-    {
-        if (event->button() == Qt::MouseButton::LeftButton)
-        {
-            //m_mousePressTimer->start(500);
-        }
-        else
-        {
-            SelectedP()->Focus(m_mousePressPoint.x(), m_mousePressPoint.y());            
-        }
+        m_mousePressPoint = event->pos();
+        SelectedP()->Focus(m_mousePressPoint);
     }
-    else
-    {
-        m_bMousePressed=false;
-    }
-#else
-    if (canContinue)
-    {
-        m_mousePressTimer->start(500);
-    }
-    else
-    {
-        m_bMousePressed=false;
-    }
-#endif
 }
 
 void Widget::mouseReleaseEvent(QMouseEvent *event)
 {
-    m_mousePressTimer->stop();
-
-    if (!m_bMousePressed)
+    if (event->button() == Qt::MouseButton::LeftButton && m_bMousePressed)
     {
-        return;
-    }
+        m_mouseReleasePoint=event->pos();
 
-    QTime mousePressFinished = QTime::currentTime();
-
-    int x=event->pos().x();
-    int y=event->pos().y();
-
-#ifndef Q_OS_ANDROID
-    if (event->button() == Qt::MouseButton::LeftButton)
-    {
-        if (SelectedP()->CanFocus(x,y) && SelectedP()->Focused())
+        if (SelectedP()->CanFocus(m_mouseReleasePoint) && SelectedP()->Focused())
         {
-            if (SelectedP()->CanFocus(x,y)->UID()==SelectedP()->Focused()->UID())
-            {
-                SelectedP()->Select(m_mousePressPoint.x(), m_mousePressPoint.y());
-                m_NeedCalculate = true;
-                repaint();
-            }
-            else // mousePress and mouseRelease are pointing to different items. Is it drag-n-drop?
+            // mousePress and mouseRelease are pointing to different items. Is it drag-n-drop?
+            if (SelectedP()->CanFocus(m_mouseReleasePoint)->UID()!=SelectedP()->Focused()->UID())
             {
                 auto focusedOld = SelectedP()->Focused();
-                auto selectedNew = SelectedP()->CanSelect(x, y);
+                auto selectedNew = SelectedP()->CanSelect(m_mouseReleasePoint);
                 TArea::PasteTo(focusedOld, selectedNew);
                 m_NeedCalculate = true;
                 repaint();
             }
         }
     }
-    else
-    {
-        if ((SelectedP()->CanFocus(x,y) && SelectedP()->Focused())&&
-            (SelectedP()->CanFocus(x,y)->UID()==SelectedP()->Focused()->UID()))
-        {
-            SelectedP()->Focused()->Highlight(true);
-            repaint();
-            ShowFocusedTaskPopUp(x,y);
-        }
-        else // mousePress and mouseRelease are pointing to different items. Is it drag-n-drop?
-        {
-
-        }
-    }
-
-#else
-    if ((SelectedP()->CanFocus(x,y) && SelectedP()->Focused())&&
-        (SelectedP()->CanFocus(x,y)->UID()==SelectedP()->Focused()->UID()))
-    {
-        if (m_mousePressStarted.msecsTo(mousePressFinished)<500)
-        {
-            SelectedP()->Select(m_mousePressPoint.x(), m_mousePressPoint.y());
-            m_NeedCalculate = true;
-            repaint();
-        }
-        /*else
-        { // TODO: show pop-up window to select next action for the focused task
-            emit FocusedTaskPopUp(x,y);
-        }*/
-    }
-    else // mousePress and mouseRelease are pointing to different items. Is it drag-n-drop?
-    {
-
-    }
-#endif
 }
 
-void Widget::MousePressTimer()
+void Widget::mouseDoubleClickEvent(QMouseEvent *event)
 {
-    m_mousePressTimer->stop();
+    m_mouseReleasePoint=event->pos();
 
-    int x=this->mapFromGlobal(QCursor::pos()).x();
-    int y=this->mapFromGlobal(QCursor::pos()).y();
-    if ((SelectedP()->CanFocus(x,y) && SelectedP()->Focused())&&
-        (SelectedP()->CanFocus(x,y)->UID()==SelectedP()->Focused()->UID()))
-    {
-        ShowFocusedTaskPopUp(x,y);
-    }
-    else // mousePress and mouseRelease are pointing to different items. Is it drag-n-drop?
-    {
-
-    }
-
-    //QMouseEvent *mEvnRelease = new QMouseEvent(QEvent::MouseButtonRelease, QCursor::pos(), Qt::LeftButton, Qt::LeftButton, Qt::NoModifier);
-    //QCoreApplication::sendEvent(QWidget::focusWidget(),mEvnRelease);
+    SelectedP()->Select(m_mouseReleasePoint);
+    m_NeedCalculate = true;
+    repaint();
 }
 
 pXMLParametrised Widget::AddOsc(const std::string& uid, pXMLParametrised& osc)
@@ -378,7 +302,7 @@ void Widget::SetFocusedVolume(double value)
     repaint();
 }
 
-void Widget::ShowFocusedTaskPopUp(int x, int y)
+void Widget::ShowFocusedTaskPopUp(QPoint point)
 {
     if (!m_wFocusedTaskPopUp)
     {
@@ -393,8 +317,7 @@ void Widget::ShowFocusedTaskPopUp(int x, int y)
     }
 
     //QPoint pos = mapToGlobal(QPoint(x, y));
-    QPoint pos(x, y);
-    m_wFocusedTaskPopUp->UpdateGeometry(pos, ButtonSize(), width(), height());
+    m_wFocusedTaskPopUp->UpdateGeometry(point, ButtonSize(), width(), height());
     auto focused = SelectedP()->Focused()->GetValue();
     auto max = SelectedP()->Focused()->ParentA()->Max()*2.0;
     auto min = SelectedP()->Focused()->ParentA()->Max()/10.0;

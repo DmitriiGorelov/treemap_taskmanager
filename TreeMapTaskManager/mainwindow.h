@@ -124,8 +124,8 @@ private slots:
     void projectSelected(const QString& uid);
 
     // Widget
-    void MapMousePressed(int x, int y, bool& canContinue);
-    void FocusedTaskPopUp(int x, int y);
+    void MapMousePressed(QPoint point, bool& canContinue);
+    void FocusedTaskPopUp(QPoint point);
 
     // File
     void DataBaseNew();
@@ -152,7 +152,7 @@ private slots:
 
 private:
     void ShowWindowEditTask();
-    void ShowFocusedTaskPopUp(int x, int y);
+    void ShowFocusedTaskPopUp(QPoint point);
 
     int ButtonSize();
     void SaveLastPath(const QString &fname);

@@ -58,21 +58,23 @@ public:
 protected:    
     void resizeEvent(QResizeEvent* event);
     void paintEvent(QPaintEvent *) final;
+
+    void contextMenuEvent(QContextMenuEvent *event) final;
     void mousePressEvent(QMouseEvent *event) final;
     void mouseReleaseEvent(QMouseEvent *event) final;
+    void mouseDoubleClickEvent(QMouseEvent *event) final;
+
     virtual pXMLParametrised AddOsc(const std::string& uid, pXMLParametrised& osc) final;
     virtual std::list<pXMLParametrised> getRootOsc() final;
     QStringList getUsers();
 
 private:
-    void ShowFocusedTaskPopUp(int x, int y);
+    void ShowFocusedTaskPopUp(QPoint point);
     void ShowWindowEditTask();
 
     int ButtonSize();
 
 private slots:
-    void MousePressTimer();
-
     void ViewTask();
     void EditTask();
     void DeleteTask();
@@ -84,7 +86,7 @@ private slots:
 
 private:
 signals:
-    void MousePressed(int x, int y, bool& canContinue);
+    void MousePressed(QPoint point, bool& canContinue);
 
     //void FocusedTaskPopUp(int x, int y);
 
@@ -101,9 +103,7 @@ private:
     TProjects Projects;
     pTProject pSelectedP;
     QPoint m_mousePressPoint;
-    QTime m_mousePressStarted;
-
-    QTimer* m_mousePressTimer;
+    QPoint m_mouseReleasePoint;
 
     bool m_NeedCalculate;
     bool m_bMousePressed;

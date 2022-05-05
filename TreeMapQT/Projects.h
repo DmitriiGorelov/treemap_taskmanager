@@ -98,18 +98,24 @@ public:
         return SelectedA()->Max();
     }
 
-    pTArea CanFocus(int x, int y)
+    /*pTArea CanFocus(int x, int y)
     {
         return SelectedA()->Select(x,y);
+    }*/
+
+    pTArea CanFocus(QPoint point)
+    {
+        return SelectedA()->Select(point);
     }
 
-    void Focus(int x, int y)
+    pTArea Focus(QPoint point)
     {
         UnFocus();
-        pTArea area =SelectedA()->Select(x,y);
+        pTArea area = SelectedA()->Select(point);
         if (area)
         {
             pFocusedA=area;
+            return area;
             //pFocusedA->Highlight(true);
         }
     }
@@ -136,17 +142,29 @@ public:
         return pFocusedA;
     }
 
-    pTArea CanSelect(int x, int y)
+    /*pTArea CanSelect(int x, int y)
     {
         return SelectedA()->Select(x,y);
+    }*/
+
+    pTArea CanSelect(QPoint point)
+    {
+        return SelectedA()->Select(point);
     }
 
-    void Select(int x, int y)
+    /*void Select(int x, int y)
     {
         pTArea area =SelectedA()->Select(x,y);
         if (area)
             pSelectedA=area;
-    }    
+    }    */
+
+    void Select(QPoint point)
+    {
+        pTArea area =SelectedA()->Select(point);
+        if (area)
+            pSelectedA=area;
+    }
 
     void Select (pTArea area)
     {

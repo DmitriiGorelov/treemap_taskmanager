@@ -330,17 +330,17 @@ void MainWindow::projectSelected(const QString& uid)
     }
 }
 
-void MainWindow::MapMousePressed(int x, int y, bool& canContinue)
+void MainWindow::MapMousePressed(QPoint point, bool& canContinue)
 {
     canContinue = !wTasks->HideFocusedTaskPopUp();
 }
 
-void MainWindow::FocusedTaskPopUp(int x, int y)
+void MainWindow::FocusedTaskPopUp(QPoint point)
 {
-    ShowFocusedTaskPopUp(x, y);
+    ShowFocusedTaskPopUp(point);
 }
 
-void MainWindow::ShowFocusedTaskPopUp(int x, int y)
+void MainWindow::ShowFocusedTaskPopUp(QPoint point)
 {
     /*if (!m_wFocusedTaskPopUp)
     {

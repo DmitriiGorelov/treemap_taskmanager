@@ -162,13 +162,16 @@ struct TPoint{
             return max;
         }
 
-        pTArea Select(int x, int y)
+        pTArea Select(QPoint point)
         {
+            int x=point.x();
+            int y=point.y();
+
             for (auto& it : Areas)
             {
                 if (x>=it->TopLeft.x() && x<=it->TopRight.x() && y>=it->TopLeft.y() && y<=it->BottomRight.y())
                 {
-                    pTArea p=it->Select(x,y);
+                    pTArea p=it->Select(point);
                     if (p)
                         return p;
                     else
