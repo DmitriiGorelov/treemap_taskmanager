@@ -7,6 +7,7 @@
 #include <QGroupBox>
 #include <QPushButton>
 #include <QComboBox>
+#include <QSpinBox>
 #include <QScreen>
 #include <QTreeView>
 #include <QStandardItemModel>
@@ -27,6 +28,7 @@ public:
     void UpdateGeometry(QPoint point, int newHeight, int parentWidth, int parentHeight);
     void SetValueRange(int min, int max, int value);
     void SetUsers(const QString& user, const QStringList& allUsers);
+    void SetRows(int value);
 
 protected:
     void resizeEvent(QResizeEvent* event) final;
@@ -39,6 +41,7 @@ private slots:
     void bTaskColorClicked();
     void bAddTaskClicked();
     void sTaskVolumeChanged(int position);
+    void sTaskRowsChanged(int position);
     void sUserOfTaskChanged(const QString &);
 
 private:
@@ -49,6 +52,7 @@ signals:
     void AddTask();
     void ColorTask(QColor col);
     void TaskVolumeChanged(int position);
+    void TaskRowsChanged(int position);
     void UserOfTaskChanged(const QString);
 
 private:

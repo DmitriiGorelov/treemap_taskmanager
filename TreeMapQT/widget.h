@@ -83,6 +83,7 @@ private slots:
     void TextEditBeforeClose();
     void TaskVolumeChanged(int percent);
     void UserOfTaskChanged(const QString value);
+    void TaskRowsChanged(int value);
 
 private:
 signals:

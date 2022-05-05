@@ -313,6 +313,7 @@ void Widget::ShowFocusedTaskPopUp(QPoint point)
         connect(m_wFocusedTaskPopUp, &cFocusedTaskPopUp::ViewTask, this, &Widget::ViewTask);
         connect(m_wFocusedTaskPopUp, &cFocusedTaskPopUp::AddTask, this, &Widget::AddTaskFocused);
         connect(m_wFocusedTaskPopUp, &cFocusedTaskPopUp::TaskVolumeChanged, this, &Widget::TaskVolumeChanged);
+        connect(m_wFocusedTaskPopUp, &cFocusedTaskPopUp::TaskRowsChanged, this, &Widget::TaskRowsChanged);
         connect(m_wFocusedTaskPopUp, &cFocusedTaskPopUp::UserOfTaskChanged, this, &Widget::UserOfTaskChanged);
     }
 
@@ -326,6 +327,8 @@ void Widget::ShowFocusedTaskPopUp(QPoint point)
     QStringList all=getUsers();
     all.push_front("");
     m_wFocusedTaskPopUp->SetUsers(SelectedP()->Focused()->GetUser(), all);
+
+    m_wFocusedTaskPopUp->SetRows(SelectedP()->Focused()->GetRows());
 
     m_wFocusedTaskPopUp->show();
 }
@@ -366,6 +369,17 @@ void Widget::UserOfTaskChanged(const QString value)
 
     if (SelectedP()->Focused())
         SelectedP()->Focused()->SetUser(value);
+
+    WriteXML();
+
+    m_NeedCalculate = true;
+    repaint();
+}
+
+void Widget::TaskRowsChanged(int value)
+{
+    if (SelectedP()->Focused())
+        SelectedP()->Focused()->SetRows(value);
 
     WriteXML();
 

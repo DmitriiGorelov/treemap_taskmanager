@@ -47,6 +47,7 @@ cFocusedTaskPopUp::cFocusedTaskPopUp(QWidget *parent)
     {
         comboboxes++;
         QComboBox* b = new QComboBox(this);
+        b->setObjectName("Users");
         m_b.push_back(b);        
         connect(b, &QComboBox::currentTextChanged,this, &cFocusedTaskPopUp::sUserOfTaskChanged);
     }
@@ -56,6 +57,18 @@ cFocusedTaskPopUp::cFocusedTaskPopUp(QWidget *parent)
         m_b.push_back(b);
         connect(b, &QPushButton::clicked, this, &cFocusedTaskPopUp::bTaskColorClicked);
         b->setIcon(QIcon(QPixmap(":/task/images/color.png")));
+    }
+
+    {
+        QSpinBox* b = new QSpinBox(this);
+        b->setObjectName("Rows");
+        m_b.push_back(b);
+        b->setMinimum(0);
+        b->setMaximum(20);
+        b->setValue(0);
+
+        connect(b, qOverload<int>(&QSpinBox::valueChanged), this, &cFocusedTaskPopUp::sTaskRowsChanged);
+        //b->setIcon(QIcon(QPixmap(":/task/images/browser.png")));
     }
 }
 
@@ -98,11 +111,24 @@ void cFocusedTaskPopUp::SetUsers(const QString& user, const QStringList& allUser
     for (auto& it : m_b)
     {
         auto o=qobject_cast<QComboBox*>(it);
-        if (o)
+        if (o && o->objectName()=="Users")
         {
             o->clear();
             o->addItems(allUsers);
             o->setCurrentText(user);
+            break;
+        }
+    }
+}
+
+void cFocusedTaskPopUp::SetRows(int value)
+{
+    for (auto& it : m_b)
+    {
+        auto o=qobject_cast<QSpinBox*>(it);
+        if (o && o->objectName()=="Rows")
+        {
+            o->setValue(value);
             break;
         }
     }
@@ -177,6 +203,11 @@ void cFocusedTaskPopUp::bTaskColorClicked()
 void cFocusedTaskPopUp::sTaskVolumeChanged(int position)
 {
     emit TaskVolumeChanged(position);
+}
+
+void cFocusedTaskPopUp::sTaskRowsChanged(int position)
+{
+    emit TaskRowsChanged(position);
 }
 
 void cFocusedTaskPopUp::sUserOfTaskChanged(const QString & value)

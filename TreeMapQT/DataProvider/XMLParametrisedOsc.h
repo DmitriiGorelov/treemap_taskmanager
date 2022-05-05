@@ -19,6 +19,7 @@ namespace global_namespace {
             static std::string AttrNameSelected() {return "selected";}
             static std::string AttrNameCallbacks() {return "callbacks";}
             static std::string AttrNameColor() {return "color";}
+            static std::string AttrNameRows() {return "rows";}
             //static std::string ParameterNode;
             /*static std::string OscNode;*/
 
@@ -62,6 +63,9 @@ namespace global_namespace {
 
             std::string paraColor();
             void paraColor(std::string value);
+
+            int paraRows();
+            void paraRows(int v);
 
             void setXML(pugi::xml_node& node);
 

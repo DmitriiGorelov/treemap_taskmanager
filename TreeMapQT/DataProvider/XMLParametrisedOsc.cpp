@@ -30,6 +30,9 @@ namespace global_namespace {
     std::string cXMLParametrisedOsc::paraColor() { return cXMLParametrised::GetParameter<std::string>(AttrNameColor(), "#ffffff"); }
     void cXMLParametrisedOsc::paraColor(std::string value) { cXMLParametrised::SetParameter<std::string>(AttrNameColor(), value); }
 
+    int cXMLParametrisedOsc::paraRows() {return cXMLParametrised::GetParameter<double>(AttrNameRows(),0); }
+    void cXMLParametrisedOsc::paraRows(int v) { cXMLParametrised::SetParameter<double>(AttrNameRows(),v); }
+
     void cXMLParametrisedOsc::setXML(pugi::xml_node& node) { cXMLParametrised::SetXML(node); }
 
 //protected:

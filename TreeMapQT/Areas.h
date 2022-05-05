@@ -247,6 +247,16 @@ struct TPoint{
             cXMLParametrisedOsc::paraValue(value);
         }
 
+        int GetRows()
+        {
+            return cXMLParametrisedOsc::paraRows();
+        }
+
+        void SetRows(int value)
+        {
+            cXMLParametrisedOsc::paraRows(value);
+        }
+
         QColor GetColor()
         {
             QColor col;
@@ -297,7 +307,7 @@ struct TPoint{
 
     protected:
         void resetRect();
-        qreal DrawText(QPainter& painter, qreal border);
+        qreal DrawText(const QRectF& rect, QPainter& painter, qreal border);
         QRectF textRec();
     public:
 

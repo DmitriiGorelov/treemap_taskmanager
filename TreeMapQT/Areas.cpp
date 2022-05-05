@@ -484,9 +484,9 @@ p, li { white-space: pre-wrap; }
     return result;
 }
 
-qreal TArea::DrawText(QPainter& painter, qreal border)
+qreal TArea::DrawText(const QRectF& rect, QPainter& painter, qreal border)
 {
-    QRectF rec = QRectF(QPointF(TopLeft.x(), TopLeft.y()), QSizeF(BottomRight.x()-TopLeft.x(), BottomRight.y()-TopLeft.y()-2*border));
+    QRectF rec = QRectF(rect.topLeft(), QSizeF(rect.bottomRight().x()-rect.topLeft().x(), rect.bottomRight().y()-rect.topLeft().y()-2*border));
 
     painter.setPen(Qt::black);
     QStaticText text;
@@ -542,11 +542,11 @@ void TArea::Paint(QPainter& painter, int level)
 
 #if ShowCurrentTask
     if (level==0)
-        DrawText(painter,b);
+        DrawText(QRectF(TopLeft, BottomRight), painter,b);
 #endif
 
     if (level>0)
-       DrawText(painter,b+2);
+       DrawText(QRectF(TopLeft, BottomRight), painter,b+2);
 
     level++;
     for (auto& it : Areas)
@@ -584,12 +584,11 @@ void TArea::Calculate(QRectF rect, int level)
     BottomLeft=rect.bottomLeft();
     BottomRight=rect.bottomRight();
 
-    // for subordinate areas we give space reduced by the space, required for the text of this area.
 #if ShowCurrentTask
     if (ParentA() && level==0)
     {
         QPainter painter;
-        qreal h = DrawText(painter,border(level));
+        qreal h = DrawText(rect, painter,border(level));
         if (rect.height()<h)
         {
             for (auto& it : Areas)
@@ -610,7 +609,7 @@ void TArea::Calculate(QRectF rect, int level)
     if (level>0)
     {
         QPainter painter;
-        qreal h = DrawText(painter,border(level));
+        qreal h = DrawText(rect, painter,border(level));
         if (rect.height()<h)
         {
             for (auto& it : Areas)
@@ -625,161 +624,166 @@ void TArea::Calculate(QRectF rect, int level)
         }
     }
 
-    // for the moment we need this intermediate buffer as a copy of original.
-    TAreas Values;
-    Values = Areas;
-
-    tref ref;
-
-    if (Values.size()<1)
-        return;
-
-    for (auto& it : Values)
+    auto rows=paraRows();
+    if (rows>0)
     {
-        ref.emplace_back(TData(it));
-    }
-
-    auto b = [](TData a, TData b) {return a.area->paraValue() < b.area->paraValue(); };
-
-    ref.sort(b);
-
-    double sum(0.0);
-    for (auto& it : ref)
-    {
-        sum += it.area->paraValue();
-    }
-
-    /*pTArea gArea=boost::make_shared<TArea>(TArea(sum, { 0, 0 },
-                        { rect.width() - 1, 0 },
-                        { 0, rect.height() - 1 },
-                        { rect.width() - 1, rect.height() - 1 }));*/
-
-    pTArea gArea=boost::make_shared<TArea>(TArea(sum, rect.topLeft(), rect.topRight(), rect.bottomLeft(), rect.bottomRight()));
-
-    tref2 ref2;
-    ref2.emplace_back(TData2(ref, gArea));
-    size_t prevSize = ref2.size();
-
-    auto it = ref2.begin();
-    while (it!=ref2.end())
-    {
-        double X((*it).area->TopRight.x() - (*it).area->TopLeft.x());
-        double Y((*it).area->BottomRight.y() - (*it).area->TopRight.y());
-
-        (*it).vertical = X > Y;
-
-        srt2(*it);
-
-        auto ait = (*it).ref.begin();
-        std::advance(ait, (*it).ref.size() - 1);
-
-        if ((*ait).ratioToArea > 0.5)
+        size_t n = Areas.size();
+        size_t cols=n/rows+(n%rows==0?0:1);
+        int colw=rect.width()/cols;
+        int rowh=rect.height()/rows;
+        int icol=0;
+        int irow=0;
+        for (auto& it : Areas)
         {
-            /*if ((*it).vertical)
+            it->TopLeft = { rect.topLeft().x()+icol*colw, rect.topLeft().y()+irow*rowh };
+            it->BottomRight = { it->TopLeft.x()+colw, it->TopLeft.y()+rowh };
+            icol++;
+            if (icol==cols)
             {
-                (*it).cutLeft(ait);
-            }
-            else
-            {
-                (*it).cutTop(ait);
-            }*/
-
-            if ((*it).ref.size() > 1)
-            {
-                // keep to iterate one more time
-            }
-            else
-            {
-                auto it2 = it;
-                it++;
-                ref2.erase(it2);
-                continue;
-            }
-        }
-        //else
-        {
-            if ((*it).vertical)
-            {
-                X /= 2.0;
-                for (auto ait= (*it).ref.begin(); ait!= (*it).ref.end(); ait++)
-                {
-                    if ((*ait).area->TopLeft.x() <= (*it).area->TopRight.x() - X) // we split here
-                    {
-                        if (ait == (*it).ref.begin())
-                        {
-                            // ??
-                        }
-
-                        tref ref = { (*it).ref.begin(), ait }; // right side
-
-                        (*it).cutLeft(ait);
-
-                        if (ref.size() > 0)
-                        {
-                            ref2.emplace(it, TData2(ref, (*it).vertical));
-                            it--;
-                        }
-                        else
-                        {
-                            it++;
-                        }
-
-                        break;
-                    }
-                }
-            }
-            else
-            {
-                Y /= 2.0;
-                for (auto ait = (*it).ref.begin(); ait != (*it).ref.end(); ait++)
-                {
-                    if ((*ait).area->TopRight.y() <= (*it).area->BottomRight.y() - Y) // we split here
-                    {
-                        if (ait == (*it).ref.begin())
-                        {
-                            // ??
-                        }
-
-                        tref ref = { (*it).ref.begin(), ait }; // right side
-
-                        (*it).cutTop(ait);
-                        if (ref.size() > 0)
-                        {
-                            ref2.emplace(it, TData2(ref, (*it).vertical));
-                            it--;
-                        }
-                        else
-                        {
-                            it++;
-                        }
-
-                        break;
-                    }
-                }
+                irow++;
+                icol=0;
             }
         }
     }
-
-    /*QRectF r=rect;
-#if !ShowCurrentTask
-    if (ParentA())
+    else
     {
-        QPainter painter;
-        qreal h = DrawText(painter,3);
-        if (r.height()<h)
-        {
-            for (auto& it2 : Areas)
-            {
-                it2->resetRect();
-            }
+        // for subordinate areas we give space reduced by the space, required for the text of this area.
+
+
+        // for the moment we need this intermediate buffer as a copy of original.
+        auto Values = Areas;
+
+        tref ref;
+
+        if (Values.size()<1)
             return;
-        }
-        else
+
+        for (auto& it : Values)
         {
-            r.setTop(r.topLeft().y()+h);
+            ref.emplace_back(TData(it));
+        }
+
+        auto b = [](TData a, TData b) {return a.area->paraValue() < b.area->paraValue(); };
+
+        ref.sort(b);
+
+        double sum(0.0);
+        for (auto& it : ref)
+        {
+            sum += it.area->paraValue();
+        }
+
+        /*pTArea gArea=boost::make_shared<TArea>(TArea(sum, { 0, 0 },
+                            { rect.width() - 1, 0 },
+                            { 0, rect.height() - 1 },
+                            { rect.width() - 1, rect.height() - 1 }));*/
+
+        pTArea gArea=boost::make_shared<TArea>(TArea(sum, rect.topLeft(), rect.topRight(), rect.bottomLeft(), rect.bottomRight()));
+
+        tref2 ref2;
+        ref2.emplace_back(TData2(ref, gArea));
+        size_t prevSize = ref2.size();
+
+        auto it = ref2.begin();
+        while (it!=ref2.end())
+        {
+            double X((*it).area->TopRight.x() - (*it).area->TopLeft.x());
+            double Y((*it).area->BottomRight.y() - (*it).area->TopRight.y());
+
+            (*it).vertical = X > Y;
+
+            srt2(*it);
+
+            auto ait = (*it).ref.begin();
+            std::advance(ait, (*it).ref.size() - 1);
+
+            if ((*ait).ratioToArea > 0.5)
+            {
+                /*if ((*it).vertical)
+                {
+                    (*it).cutLeft(ait);
+                }
+                else
+                {
+                    (*it).cutTop(ait);
+                }*/
+
+                if ((*it).ref.size() > 1)
+                {
+                    // keep to iterate one more time
+                }
+                else
+                {
+                    auto it2 = it;
+                    it++;
+                    ref2.erase(it2);
+                    continue;
+                }
+            }
+            //else
+            {
+                if ((*it).vertical)
+                {
+                    X /= 2.0;
+                    for (auto ait= (*it).ref.begin(); ait!= (*it).ref.end(); ait++)
+                    {
+                        if ((*ait).area->TopLeft.x() <= (*it).area->TopRight.x() - X) // we split here
+                        {
+                            if (ait == (*it).ref.begin())
+                            {
+                                // ??
+                            }
+
+                            tref ref = { (*it).ref.begin(), ait }; // right side
+
+                            (*it).cutLeft(ait);
+
+                            if (ref.size() > 0)
+                            {
+                                ref2.emplace(it, TData2(ref, (*it).vertical));
+                                it--;
+                            }
+                            else
+                            {
+                                it++;
+                            }
+
+                            break;
+                        }
+                    }
+                }
+                else
+                {
+                    Y /= 2.0;
+                    for (auto ait = (*it).ref.begin(); ait != (*it).ref.end(); ait++)
+                    {
+                        if ((*ait).area->TopRight.y() <= (*it).area->BottomRight.y() - Y) // we split here
+                        {
+                            if (ait == (*it).ref.begin())
+                            {
+                                // ??
+                            }
+
+                            tref ref = { (*it).ref.begin(), ait }; // right side
+
+                            (*it).cutTop(ait);
+                            if (ref.size() > 0)
+                            {
+                                ref2.emplace(it, TData2(ref, (*it).vertical));
+                                it--;
+                            }
+                            else
+                            {
+                                it++;
+                            }
+
+                            break;
+                        }
+                    }
+                }
+            }
         }
     }
-#endif*/
 
     level++;
     for (auto& it : Areas)

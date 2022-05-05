@@ -144,8 +144,6 @@ private slots:
     void FocusInGroupButtons();
     void AddTaskSelected();
     void LevelUp();
-    void AddTaskFocused();
-    void TaskVolumeChanged(int percent);
 
     // TextEdit
     void TextEditBeforeClose();

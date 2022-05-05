@@ -342,24 +342,6 @@ void MainWindow::FocusedTaskPopUp(QPoint point)
 
 void MainWindow::ShowFocusedTaskPopUp(QPoint point)
 {
-    /*if (!m_wFocusedTaskPopUp)
-    {
-        m_wFocusedTaskPopUp=new cFocusedTaskPopUp(this);
-        connect(m_wFocusedTaskPopUp, &cFocusedTaskPopUp::EditTask, this, &MainWindow::EditTask);
-        connect(m_wFocusedTaskPopUp, &cFocusedTaskPopUp::DeleteTask, this, &MainWindow::DeleteTask);
-        connect(m_wFocusedTaskPopUp, &cFocusedTaskPopUp::ViewTask, this, &MainWindow::ViewTask);
-        connect(m_wFocusedTaskPopUp, &cFocusedTaskPopUp::AddTask, this, &MainWindow::AddTaskFocused);
-        connect(m_wFocusedTaskPopUp, &cFocusedTaskPopUp::TaskVolumeChanged, this, &MainWindow::TaskVolumeChanged);
-    }
-
-    //QPoint pos = mapToGlobal(QPoint(x, y));
-    QPoint pos(x, y);
-    m_wFocusedTaskPopUp->UpdateGeometry(pos, ButtonSize(), width(), height());
-    auto focused = wTasks->SelectedP()->Focused()->GetValue();
-    auto max = wTasks->SelectedP()->Focused()->ParentA()->Max()*2.0;
-    auto min = wTasks->SelectedP()->Focused()->ParentA()->Max()/10.0;
-    m_wFocusedTaskPopUp->SetValueRange(min, max, focused);
-    m_wFocusedTaskPopUp->show();*/
 }
 
 void MainWindow::FocusInGroupButtons()
@@ -410,19 +392,6 @@ void MainWindow::AddTaskSelected()
     wTasks->HideFocusedTaskPopUp();
     wTasks->AddTaskSelected();
     ShowWindowEditTask();
-}
-
-void MainWindow::AddTaskFocused()
-{
-    wTasks->HideFocusedTaskPopUp();
-    wTasks->AddTaskFocused();
-    ShowWindowEditTask();
-}
-
-void MainWindow::TaskVolumeChanged(int value)
-{
-    //HideFocusedTaskPopUp();
-    wTasks->SetFocusedVolume(value);
 }
 
 void MainWindow::LevelUp()
