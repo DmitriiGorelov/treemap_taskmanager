@@ -9,18 +9,21 @@ cFocusedTaskPopUp::cFocusedTaskPopUp(QWidget *parent)
 {
     {
         QPushButton* b = new QPushButton(this);
+        b->setObjectName("DeleteTask");
         m_b.push_back(b);
         connect(b, &QPushButton::clicked,this, &cFocusedTaskPopUp::bDeleteTaskClicked);
         b->setIcon(QIcon(QPixmap(":/task/images/delete.png")));
     }
     {
         QPushButton* b = new QPushButton(this);
+        b->setObjectName("EditTask");
         m_b.push_back(b);
         connect(b, &QPushButton::clicked,this, &cFocusedTaskPopUp::bEditTaskClicked);
         b->setIcon(QIcon(QPixmap(":/task/images/edit.png")));
     }
     {
         QPushButton* b = new QPushButton(this);
+        b->setObjectName("AddTask");
         m_b.push_back(b);
         connect(b, &QPushButton::clicked,this, &cFocusedTaskPopUp::bAddTaskClicked);
         b->setIcon(QIcon(QPixmap(":/task/images/add.png")));
@@ -35,6 +38,7 @@ cFocusedTaskPopUp::cFocusedTaskPopUp(QWidget *parent)
 
     {
         QSlider* b = new QSlider(this);
+        b->setObjectName("TaskVolume");
         m_b.push_back(b);
         b->setMinimum(1);
         b->setMaximum(200);
@@ -47,13 +51,14 @@ cFocusedTaskPopUp::cFocusedTaskPopUp(QWidget *parent)
     {
         comboboxes++;
         QComboBox* b = new QComboBox(this);
-        b->setObjectName("Users");
+        b->setObjectName("TaskUser");
         m_b.push_back(b);        
         connect(b, &QComboBox::currentTextChanged,this, &cFocusedTaskPopUp::sUserOfTaskChanged);
     }
 
     {
         QPushButton* b=new QPushButton(this);
+        b->setObjectName("TaskColor");
         m_b.push_back(b);
         connect(b, &QPushButton::clicked, this, &cFocusedTaskPopUp::bTaskColorClicked);
         b->setIcon(QIcon(QPixmap(":/task/images/color.png")));
@@ -61,7 +66,7 @@ cFocusedTaskPopUp::cFocusedTaskPopUp(QWidget *parent)
 
     {
         QSpinBox* b = new QSpinBox(this);
-        b->setObjectName("Rows");
+        b->setObjectName("TaskRows");
         m_b.push_back(b);
         b->setMinimum(0);
         b->setMaximum(20);
@@ -111,7 +116,7 @@ void cFocusedTaskPopUp::SetUsers(const QString& user, const QStringList& allUser
     for (auto& it : m_b)
     {
         auto o=qobject_cast<QComboBox*>(it);
-        if (o && o->objectName()=="Users")
+        if (o && o->objectName()=="TaskUser")
         {
             o->clear();
             o->addItems(allUsers);
@@ -126,7 +131,7 @@ void cFocusedTaskPopUp::SetRows(int value)
     for (auto& it : m_b)
     {
         auto o=qobject_cast<QSpinBox*>(it);
-        if (o && o->objectName()=="Rows")
+        if (o && o->objectName()=="TaskRows")
         {
             o->setValue(value);
             break;
