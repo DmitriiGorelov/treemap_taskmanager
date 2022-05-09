@@ -18,8 +18,10 @@ Widget::Widget(const QString& fname, QWidget *parent)
     , pSelectedP(nullptr)
     , m_mousePressPoint(0,0)
     , m_mouseReleasePoint(0,0)
+    , m_DraggingTask(nullptr)
     , m_NeedCalculate(true)
-    , m_bMousePressed(false)
+    , m_bMouseLeftPressed(false)
+    , m_bMouseRightPressed(false)
     , m_wFocusedTaskPopUp(Q_NULLPTR)
 {
     ui->setupUi(this);
@@ -60,7 +62,7 @@ void Widget::clear()
     pSelectedP.reset();
     Projects.clear();
     m_NeedCalculate=true;
-    repaint();
+    update();
 }
 
 void Widget::AddProject(const QString& caption)
@@ -79,7 +81,7 @@ void Widget::AddTaskSelected()
         WriteXML();
 
         m_NeedCalculate=true;        
-        repaint();
+        update();
     }
 }
 
@@ -92,7 +94,7 @@ void Widget::AddTaskFocused()
         WriteXML();                
 
         m_NeedCalculate=true;        
-        repaint();
+        update();
     }
 }
 
@@ -102,7 +104,7 @@ void Widget::LevelUp()
     {
         SelectedP()->LevelUp();
         m_NeedCalculate=true;
-        repaint();
+        update();
     }
 }
 
@@ -112,7 +114,7 @@ void Widget::DeleteFocused()
     WriteXML();
 
     m_NeedCalculate=true;
-    repaint();
+    update();
 }
 
 void Widget::FocusSelected()
@@ -158,7 +160,7 @@ void Widget::SetFocusedText(const QString& str)
     WriteXML();
 
     m_NeedCalculate = true;
-    repaint();
+    update();
 }
 
 void Widget::resizeEvent(QResizeEvent* event)
@@ -194,6 +196,9 @@ void Widget::paintEvent(QPaintEvent *event)
 
 void Widget::contextMenuEvent(QContextMenuEvent *event)
 {
+    if (!m_bMouseRightPressed)
+        return;
+
     m_mousePressPoint = event->pos();
 
     if (SelectedP()->CanFocus(m_mousePressPoint))
@@ -203,7 +208,7 @@ void Widget::contextMenuEvent(QContextMenuEvent *event)
         if (ptr)
         {
             ptr->Highlight(true);
-            repaint();
+            update();
             ShowFocusedTaskPopUp(m_mousePressPoint);
         }
     }
@@ -213,30 +218,40 @@ void Widget::mousePressEvent(QMouseEvent *event)
 {
     HideFocusedTaskPopUp();
 
+    m_mousePressPoint = event->pos();
+
     if (event->button() == Qt::MouseButton::LeftButton)
     {
-        m_bMousePressed = true;
+        m_bMouseLeftPressed = true;
+        m_bMouseRightPressed = false;
 
-        m_mousePressPoint = event->pos();
         auto oldptr = SelectedP()->Focused();
         if (oldptr)
             oldptr->Highlight(false);
 
-        auto ptr = SelectedP()->Focus(m_mousePressPoint);
-        if (ptr)
-            ptr->Highlight(true);
-        repaint();
+        m_DraggingTask = SelectedP()->Focus(m_mousePressPoint);
+        if (m_DraggingTask)
+        {
+            m_DraggingTask->Highlight(true);
+            emit FocusedTaskChanged(m_DraggingTask);
+        }
+    }
 
-        emit FocusedTaskChanged(ptr);
+    if (event->button() == Qt::MouseButton::RightButton)
+    {
+        m_bMouseLeftPressed = false;
+        m_bMouseRightPressed = true;
+
+        m_DraggingTask = SelectedP()->Focus(m_mousePressPoint);
     }
 }
 
 void Widget::mouseReleaseEvent(QMouseEvent *event)
 {
-    if (event->button() == Qt::MouseButton::LeftButton && m_bMousePressed)
-    {
-        m_mouseReleasePoint=event->pos();
+    m_mouseReleasePoint=event->pos();
 
+    if (event->button() == Qt::MouseButton::LeftButton && m_bMouseLeftPressed)
+    {        
         if (SelectedP()->CanFocus(m_mouseReleasePoint) && SelectedP()->Focused())
         {
             // mousePress and mouseRelease are pointing to different items. Is it drag-n-drop?
@@ -246,19 +261,44 @@ void Widget::mouseReleaseEvent(QMouseEvent *event)
                 auto selectedNew = SelectedP()->CanSelect(m_mouseReleasePoint);
                 TArea::PasteTo(focusedOld, selectedNew);
                 m_NeedCalculate = true;
-                repaint();
+
+                update();
             }
         }
+
+        m_bMouseLeftPressed=false;
+
+        return;
+    }
+
+    if (event->button() == Qt::MouseButton::RightButton && m_bMouseRightPressed)
+    {
+        auto neighbour = SelectedP()->CanFocus(m_mouseReleasePoint);
+        auto root = m_DraggingTask->ParentA();
+        if (neighbour && m_DraggingTask && neighbour->ParentA() == root)
+        {
+            if (root)
+            {
+                root->Reorder(m_DraggingTask, neighbour);
+            }
+        }
+
+        m_bMouseRightPressed=false;
+        m_NeedCalculate=true;
+        update();
     }
 }
 
 void Widget::mouseDoubleClickEvent(QMouseEvent *event)
 {
+    m_bMouseLeftPressed=false;
+    m_bMouseRightPressed=false;
+
     m_mouseReleasePoint=event->pos();
 
     SelectedP()->Select(m_mouseReleasePoint);
     m_NeedCalculate = true;
-    repaint();
+    update();
 }
 
 pXMLParametrised Widget::AddOsc(const std::string& uid, pXMLParametrised& osc)
@@ -318,7 +358,7 @@ void Widget::FocusedTaskVolume(double value)
     WriteXML();
 
     m_NeedCalculate = true;
-    repaint();
+    update();
 }
 
 void Widget::ShowFocusedTaskPopUp(QPoint point)
@@ -372,7 +412,7 @@ bool Widget::HideFocusedTaskPopUp()
     if (SelectedP()->Focused())
         SelectedP()->Focused()->Highlight(false);
 
-    repaint();
+    update();
     return result;
 }
 
@@ -392,7 +432,7 @@ void Widget::FocusedTaskUser(const QString value)
     WriteXML();
 
     m_NeedCalculate = true;
-    repaint();
+    update();
 }
 
 void Widget::FousedTaskRows(int value)
@@ -403,7 +443,7 @@ void Widget::FousedTaskRows(int value)
     WriteXML();
 
     m_NeedCalculate = true;
-    repaint();
+    update();
 }
 
 void Widget::TextEditBeforeClose()
@@ -414,7 +454,7 @@ void Widget::TextEditBeforeClose()
     }
 
     SelectedP()->Focused()->Highlight(false);
-    repaint();
+    update();
 
 }
 

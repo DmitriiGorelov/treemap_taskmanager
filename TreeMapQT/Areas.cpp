@@ -592,8 +592,11 @@ void TArea::resetRect()
     TopRight=QPointF(0,0);
     BottomLeft=QPointF(0,0);
     BottomRight=QPointF(0,0);
+
+    qInfo() <<__FUNCTION__ << " " <<  this;
     for (auto& it : Areas)
     {
+        qInfo() << &it;
        it->resetRect();
     }
 }
