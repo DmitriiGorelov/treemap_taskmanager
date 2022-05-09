@@ -56,6 +56,7 @@
 #include <QPointer>
 #include <QDialog>
 #include <QLayout>
+#include "mytextedit.h"
 
 //#include <QtDesigner/QDesignerCustomWidgetInterface>
 
@@ -190,7 +191,7 @@ private:
 
     QToolBar *tb;
     QString fileName;
-    QTextEdit *textEdit;
+    MyTextEdit *textEdit;
 
     QVBoxLayout* m_vLayoutMain;
     QHBoxLayout* m_hLayoutMain;

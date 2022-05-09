@@ -128,7 +128,7 @@ TextEdit::TextEdit(QWidget *parent)
 #endif
     setWindowTitle(QCoreApplication::applicationName());
 
-    textEdit = new QTextEdit(this);
+    textEdit = new MyTextEdit(this);
 
     connect(textEdit, &QTextEdit::currentCharFormatChanged,
             this, &TextEdit::currentCharFormatChanged);
@@ -368,7 +368,7 @@ void TextEdit::setupEditActions()
     actionPaste->setShortcut(QKeySequence::Paste);
     tb->addAction(actionPaste);
     if (const QMimeData *md = QApplication::clipboard()->mimeData())
-        actionPaste->setEnabled(md->hasText());
+        actionPaste->setEnabled(md->hasText() || md->hasImage());
 #else
     const QIcon cutIcon = QIcon::fromTheme("edit-cut", QIcon(rsrcPath + "/editcut.png"));
     actionCut = tb->addAction(cutIcon, tr("Cu&t"), textEdit, &QTextEdit::cut);
@@ -1095,7 +1095,7 @@ void TextEdit::clipboardDataChanged()
 {
 #ifndef QT_NO_CLIPBOARD
     if (const QMimeData *md = QApplication::clipboard()->mimeData())
-        actionPaste->setEnabled(md->hasText());
+        actionPaste->setEnabled(md->hasText() || md->hasImage());
 #endif
 }
 

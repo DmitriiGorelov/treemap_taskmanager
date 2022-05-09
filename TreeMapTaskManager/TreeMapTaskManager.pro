@@ -45,6 +45,7 @@ SOURCES += \
     ../TreeMapQT/FocusedTaskPopUp.cpp \
     ../TreeMapQT/Projects.cpp \
     ../TreeMapQT/widget.cpp \
+    ../TreeMapTextEdit/mytextedit.cpp \
     ../TreeMapTextEdit/textedit.cpp \
     d:\Projekte\Vendor/PUGI/XML/pugixml.cpp \
     dialogedittext.cpp \
@@ -72,6 +73,7 @@ HEADERS += \
     ../TreeMapQT/FocusedTaskPopUp.h \
     ../TreeMapQT/Projects.h \
     ../TreeMapQT/widget.h \
+    ../TreeMapTextEdit/mytextedit.h \
     ../TreeMapTextEdit/textedit.h \
     d:\Projekte\Vendor/PUGI/XML/pugixml.h \
     dialogedittext.h \
