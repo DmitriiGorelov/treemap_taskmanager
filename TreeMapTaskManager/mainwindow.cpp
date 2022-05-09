@@ -485,6 +485,8 @@ void MainWindow::LevelUp()
 {
     wTasks->HideFocusedTaskPopUp();
     wTasks->LevelUp();
+    wTasks->FocusSelected();
+    FocusedTaskChanged(wTasks->SelectedP()->SelectedA());
 }
 
 void MainWindow::Dummy()
@@ -529,6 +531,8 @@ void MainWindow::FocusedTaskChanged(pTArea focused)
 {
     if (!focused)
         return;
+
+    if (focused->ParentA())
     {
         auto val = focused->GetValue();
         auto max = focused->ParentA()->Max()*2.0;

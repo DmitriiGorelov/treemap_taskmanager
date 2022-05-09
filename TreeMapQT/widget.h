@@ -44,6 +44,7 @@ public:
     void AddTaskFocused();
     void LevelUp();
     void DeleteFocused();
+    void FocusSelected();
 
     QString GetFocusedText();
     void SetFocusedText(const QString& str);

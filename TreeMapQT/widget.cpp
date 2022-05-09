@@ -115,6 +115,16 @@ void Widget::DeleteFocused()
     repaint();
 }
 
+void Widget::FocusSelected()
+{
+    auto ptr=SelectedP()->SelectedA();
+    if (ptr)
+    {
+        SelectedP()->Focus(ptr);
+        emit FocusedTaskChanged(ptr);
+    }
+}
+
 pTProject Widget::SelectedP()
 {
     if (!pSelectedP)
