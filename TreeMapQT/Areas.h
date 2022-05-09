@@ -115,6 +115,25 @@ struct TPoint{
 
         boost::shared_ptr<TArea> GetPtr() {return shared_from_this();}
 
+        void Reorder(pTArea first, pTArea second)
+        {
+            if (first==second)
+            {
+                return;
+            }
+            auto itFirst = std::find(Areas.begin(), Areas.end(), first);
+            auto itSecond = std::find(Areas.begin(), Areas.end(), second);
+
+            if (itFirst!=Areas.end() && itSecond!= Areas.end())
+            {
+                Areas.erase(itFirst);
+                Areas.insert(itSecond, first);
+            }
+
+
+            //if (Areas.insert())
+        }
+
         void setAreas(const TAreas& areas)
         {
             Areas=areas;
@@ -164,7 +183,7 @@ struct TPoint{
             return max;
         }
 
-        pTArea Select(QPoint point)
+        pTArea Selectable(QPoint point)
         {
             int x=point.x();
             int y=point.y();
@@ -173,7 +192,7 @@ struct TPoint{
             {
                 if (x>=it->TopLeft.x() && x<=it->TopRight.x() && y>=it->TopLeft.y() && y<=it->BottomRight.y())
                 {
-                    pTArea p=it->Select(point);
+                    pTArea p=it->Selectable(point);
                     if (p)
                         return p;
                     else
@@ -181,6 +200,9 @@ struct TPoint{
                     break;
                 }
             }
+            if (x>=TopLeft.x() && x<=TopRight.x() && y>=TopLeft.y() && y<=BottomRight.y())
+                return GetPtr();
+
             return pTArea();
         }
 

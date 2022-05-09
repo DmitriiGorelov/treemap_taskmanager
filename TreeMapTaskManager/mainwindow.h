@@ -128,6 +128,7 @@ private slots:
     void FocusedTaskPopUp(QPoint point);
 
     // File
+    void BackupDB(QString fname);
     void DataBaseNew();
     void DataBaseOpen();
     void DataBaseSave();

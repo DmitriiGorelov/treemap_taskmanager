@@ -44,6 +44,7 @@ public:
     void AddTaskFocused();
     void LevelUp();
     void DeleteFocused();
+    void FocusSelected();
 
     QString GetFocusedText();
     void SetFocusedText(const QString& str);
@@ -111,9 +112,11 @@ private:
     pTProject pSelectedP;
     QPoint m_mousePressPoint;
     QPoint m_mouseReleasePoint;
+    pTArea m_DraggingTask;
 
     bool m_NeedCalculate;
-    bool m_bMousePressed;
+    bool m_bMouseLeftPressed;
+    bool m_bMouseRightPressed;
     cFocusedTaskPopUp* m_wFocusedTaskPopUp;
 
     //pTArea pSelectedA;

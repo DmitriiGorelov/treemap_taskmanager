@@ -53,11 +53,8 @@ MainWindow::MainWindow(QWidget *parent)
 
     QString fname("");
     if (LoadLastPath(fname))
-    {
-        if (!QFile::copy(fname, fname+".backup"))
-        {
-            qInfo() << "backup NOT MADE!";
-        }
+    {                
+        BackupDB(fname);
         wTasks = new Widget(fname,this);
     }
     else
@@ -485,6 +482,8 @@ void MainWindow::LevelUp()
 {
     wTasks->HideFocusedTaskPopUp();
     wTasks->LevelUp();
+    wTasks->FocusSelected();
+    FocusedTaskChanged(wTasks->SelectedP()->SelectedA());
 }
 
 void MainWindow::Dummy()
@@ -529,6 +528,8 @@ void MainWindow::FocusedTaskChanged(pTArea focused)
 {
     if (!focused)
         return;
+
+    if (focused->ParentA())
     {
         auto val = focused->GetValue();
         auto max = focused->ParentA()->Max()*2.0;
@@ -558,6 +559,25 @@ void MainWindow::FocusedTaskChanged(pTArea focused)
     }
 }
 
+void MainWindow::BackupDB(QString fname)
+{
+    int i=4;
+
+    QFile::remove(fname+".backup"+QString::number(i));
+    while (i>1)
+    {
+        QFile::rename(fname+".backup"+QString::number(i-1), fname+".backup"+QString::number(i));
+        QFile::remove(fname+".backup"+QString::number(i-1));
+        i--;
+    }
+
+    QFile::remove(fname+".backup1");
+    if (!QFile::copy(fname, fname+".backup1"))
+    {
+        qInfo() << "backup NOT MADE!";
+    }
+}
+
 void MainWindow::DataBaseOpen()
 {
     QString fold;
@@ -566,10 +586,8 @@ void MainWindow::DataBaseOpen()
     QString fname = QFileDialog::getOpenFileName(this, tr("Open Database file"), QFileInfo(fold).dir().path(), tr("Database (*.xml)"));
     if (!fname.isEmpty())
     {
-        if (!QFile::copy(fname, fname+".backup"))
-        {
-            qInfo() << "NOT COPIED!";
-        }
+        BackupDB(fname);
+
         if (wTasks->ReadXML(fname))
         {
            SaveLastPath(fname);

@@ -1,6 +1,7 @@
 #ifndef PROJECTS_H
 #define PROJECTS_H
 
+#include <QDebug>
 #include "Areas.h"
 #include "UID.h"
 #include "DataProvider/XMLParameters/XMLParametrised.h"
@@ -105,15 +106,17 @@ public:
 
     pTArea CanFocus(QPoint point)
     {
-        return SelectedA()->Select(point);
+        return SelectedA()->Selectable(point);
     }
 
     pTArea Focus(QPoint point)
     {
         UnFocus();
-        pTArea area = SelectedA()->Select(point);
+        pTArea area = SelectedA()->Selectable(point);
         if (area)
         {
+            qInfo() << __FUNCTION__ << area->paraCaption().c_str();
+
             pFocusedA=area;
             return area;
             //pFocusedA->Highlight(true);
@@ -122,6 +125,9 @@ public:
 
     void Focus(pTArea area)
     {
+        if (area)
+            qInfo() << __FUNCTION__ << area->paraCaption().c_str();
+
         UnFocus();
         if (area)
         {
@@ -139,6 +145,8 @@ public:
 
     pTArea Focused()
     {
+        if (pFocusedA)
+            qInfo() << pFocusedA->paraCaption().c_str();
         return pFocusedA;
     }
 
@@ -149,7 +157,7 @@ public:
 
     pTArea CanSelect(QPoint point)
     {
-        return SelectedA()->Select(point);
+        return SelectedA()->Selectable(point);
     }
 
     /*void Select(int x, int y)
@@ -161,7 +169,7 @@ public:
 
     void Select(QPoint point)
     {
-        pTArea area =SelectedA()->Select(point);
+        pTArea area =SelectedA()->Selectable(point);
         if (area)
             pSelectedA=area;
     }
