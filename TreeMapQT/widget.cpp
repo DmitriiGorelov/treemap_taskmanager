@@ -208,7 +208,16 @@ void Widget::mousePressEvent(QMouseEvent *event)
         m_bMousePressed = true;
 
         m_mousePressPoint = event->pos();
-        SelectedP()->Focus(m_mousePressPoint);
+        auto oldptr = SelectedP()->Focused();
+        if (oldptr)
+            oldptr->Highlight(false);
+
+        auto ptr = SelectedP()->Focus(m_mousePressPoint);
+        if (ptr)
+            ptr->Highlight(true);
+        repaint();
+
+        emit FocusedTaskChanged(ptr);
     }
 }
 
@@ -291,7 +300,7 @@ bool Widget::SelectProject(const QString& uid)
     return false;
 }
 
-void Widget::SetFocusedVolume(double value)
+void Widget::FocusedTaskVolume(double value)
 {
     if (SelectedP()->Focused())
         SelectedP()->Focused()->SetValue(value);
@@ -309,12 +318,12 @@ void Widget::ShowFocusedTaskPopUp(QPoint point)
         m_wFocusedTaskPopUp=new cFocusedTaskPopUp(this);
         connect(m_wFocusedTaskPopUp, &cFocusedTaskPopUp::EditTask, this, &Widget::EditTask);
         connect(m_wFocusedTaskPopUp, &cFocusedTaskPopUp::DeleteTask, this, &Widget::DeleteTask);
-        connect(m_wFocusedTaskPopUp, &cFocusedTaskPopUp::ColorTask, this, &Widget::ColorizedTask);
+        connect(m_wFocusedTaskPopUp, &cFocusedTaskPopUp::ColorTask, this, &Widget::FocusedTaskColor);
         connect(m_wFocusedTaskPopUp, &cFocusedTaskPopUp::ViewTask, this, &Widget::ViewTask);
         connect(m_wFocusedTaskPopUp, &cFocusedTaskPopUp::AddTask, this, &Widget::AddTaskFocused);
         connect(m_wFocusedTaskPopUp, &cFocusedTaskPopUp::TaskVolumeChanged, this, &Widget::TaskVolumeChanged);
-        connect(m_wFocusedTaskPopUp, &cFocusedTaskPopUp::TaskRowsChanged, this, &Widget::TaskRowsChanged);
-        connect(m_wFocusedTaskPopUp, &cFocusedTaskPopUp::UserOfTaskChanged, this, &Widget::UserOfTaskChanged);
+        connect(m_wFocusedTaskPopUp, &cFocusedTaskPopUp::TaskRowsChanged, this, &Widget::FousedTaskRows);
+        connect(m_wFocusedTaskPopUp, &cFocusedTaskPopUp::UserOfTaskChanged, this, &Widget::FocusedTaskUser);
     }
 
     //QPoint pos = mapToGlobal(QPoint(x, y));
@@ -360,10 +369,10 @@ bool Widget::HideFocusedTaskPopUp()
 void Widget::TaskVolumeChanged(int value)
 {
     //HideFocusedTaskPopUp();
-    SetFocusedVolume(value);
+    FocusedTaskVolume(value);
 }
 
-void Widget::UserOfTaskChanged(const QString value)
+void Widget::FocusedTaskUser(const QString value)
 {
     //HideFocusedTaskPopUp();
 
@@ -376,7 +385,7 @@ void Widget::UserOfTaskChanged(const QString value)
     repaint();
 }
 
-void Widget::TaskRowsChanged(int value)
+void Widget::FousedTaskRows(int value)
 {
     if (SelectedP()->Focused())
         SelectedP()->Focused()->SetRows(value);
@@ -447,7 +456,7 @@ void Widget::DeleteTask()
     DeleteFocused();
 }
 
-void Widget::ColorizedTask(QColor col)
+void Widget::FocusedTaskColor(QColor col)
 {
     if (SelectedP()->Focused())
         SelectedP()->Focused()->SetColor(col);

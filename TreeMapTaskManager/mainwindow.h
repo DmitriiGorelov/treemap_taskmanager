@@ -143,7 +143,16 @@ private slots:
     // GroupButtons
     void FocusInGroupButtons();
     void AddTaskSelected();
+    void AddTaskFocused();
     void LevelUp();
+    void Dummy();
+    void DeleteTaskSelected();
+    void EditTaskFocused();
+    void VolumeTaskFocused(int value);
+    void UserTaskFocused(const QString value);
+    void ColorTaskFocused();
+    void RowsTaskFocused(int value);
+    void FocusedTaskChanged(pTArea focused);
 
     // TextEdit
     void TextEditBeforeClose();
@@ -170,6 +179,10 @@ private:
     cViewProjects* wProjects;
     Widget* wTasks;
     int widthWasBigger;
+
+    QSlider* slTaskVolume;
+    QComboBox* cbTaskUsers;
+    QSpinBox* seTaskRows;
 
     QVBoxLayout* m_vLayoutMain;
     QHBoxLayout* m_hLayoutMain;

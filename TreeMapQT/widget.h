@@ -51,9 +51,16 @@ public:
     TProjects GetProjects() {return Projects;}
     bool SelectProject(const QString& uid);
 
-    void SetFocusedVolume(double value);
+    void FocusedTaskVolume(double value);
+    void FocusedTaskUser(const QString value);
+    void FocusedTaskColor(QColor col);
+    void FousedTaskRows(int value);
 
     bool HideFocusedTaskPopUp();
+
+    void ShowWindowEditTask();
+
+    QStringList getUsers();
 
 protected:    
     void resizeEvent(QResizeEvent* event);
@@ -66,11 +73,11 @@ protected:
 
     virtual pXMLParametrised AddOsc(const std::string& uid, pXMLParametrised& osc) final;
     virtual std::list<pXMLParametrised> getRootOsc() final;
-    QStringList getUsers();
+
 
 private:
     void ShowFocusedTaskPopUp(QPoint point);
-    void ShowWindowEditTask();
+
 
     int ButtonSize();
 
@@ -78,16 +85,15 @@ private slots:
     void ViewTask();
     void EditTask();
     void DeleteTask();
-    void ColorizedTask(QColor col);
+
 
     void TextEditBeforeClose();
-    void TaskVolumeChanged(int percent);
-    void UserOfTaskChanged(const QString value);
-    void TaskRowsChanged(int value);
+    void TaskVolumeChanged(int percent);        
 
 private:
 signals:
     void MousePressed(QPoint point, bool& canContinue);
+    void FocusedTaskChanged(pTArea focused);
 
     //void FocusedTaskPopUp(int x, int y);
 

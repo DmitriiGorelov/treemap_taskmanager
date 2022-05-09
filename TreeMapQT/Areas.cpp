@@ -491,11 +491,11 @@ R"bracket(;">
 
 qreal TArea::DrawText(const QRectF& rect, QPainter& painter, qreal border)
 {
-    //QRectF rec = QRectF(rect.topLeft(), QSizeF(rect.bottomRight().x()-rect.topLeft().x(), rect.bottomRight().y()-rect.topLeft().y()-2*border));
+    QRectF rec = QRectF(rect.topLeft(), QSizeF(rect.bottomRight().x()-rect.topLeft().x(), rect.bottomRight().y()-rect.topLeft().y()-2*border));
 
     painter.setPen(Qt::black);
     QStaticText text;
-    text.setTextWidth(rect.bottomRight().y()-rect.topLeft().y()-2*border-6/*rec.width()-2*border-6*/);
+    text.setTextWidth(rec.width()-2*border-6);
     //qInfo() << "-------------------------------------------------";
     //qInfo() << paraText().c_str();
 

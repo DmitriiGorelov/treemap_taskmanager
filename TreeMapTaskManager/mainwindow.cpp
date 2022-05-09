@@ -14,6 +14,10 @@
 #include <QFileDialog>
 #include <QSettings>
 #include <QSlider>
+#include <QColorDialog>
+
+// icons:
+// https://romannurik.github.io/AndroidAssetStudio/icons-launcher.html
 
 #ifndef QT_NO_DEBUG
 #define CHECK_TRUE(instruction) Q_ASSERT(instruction)
@@ -29,6 +33,8 @@ MainWindow::MainWindow(QWidget *parent)
     , wProjects(Q_NULLPTR)
     , wTasks(Q_NULLPTR)
     , widthWasBigger(-1)
+    , slTaskVolume(Q_NULLPTR)
+    , cbTaskUsers(Q_NULLPTR)
     , m_vLayoutMain(Q_NULLPTR)
     , m_hLayoutMain(Q_NULLPTR)
 #if UseGroupButtons
@@ -48,6 +54,10 @@ MainWindow::MainWindow(QWidget *parent)
     QString fname("");
     if (LoadLastPath(fname))
     {
+        if (!QFile::copy(fname, fname+".backup"))
+        {
+            qInfo() << "backup NOT MADE!";
+        }
         wTasks = new Widget(fname,this);
     }
     else
@@ -55,7 +65,7 @@ MainWindow::MainWindow(QWidget *parent)
         wTasks = new Widget(QString(std::string(backupFolder() + std::string("/OscInfo.xml")).c_str()),this);
     }
     connect(wTasks, &Widget::MousePressed, this, &MainWindow::MapMousePressed);
-    //connect(wTasks, &Widget::FocusedTaskPopUp, this, &MainWindow::FocusedTaskPopUp);
+    connect(wTasks, &Widget::FocusedTaskChanged, this, &MainWindow::FocusedTaskChanged);
 
 #if UseGroupButtons
     m_wGroupButtons = new cGroupButtons(this);    
@@ -146,6 +156,76 @@ MainWindow::MainWindow(QWidget *parent)
         a->setPriority(QAction::LowPriority);
         a->setShortcut(QKeySequence::Back);
     }
+
+    {
+        const QIcon Icon = QIcon::fromTheme("document-new", QIcon(""));
+        QAction *a = mTasks->addAction(Icon,  tr(""), this, &MainWindow::Dummy);
+        tbTasks->addAction(a);
+    }
+
+    //-----
+    {
+        const QIcon Icon = QIcon::fromTheme("document-new", QIcon(":/task/images/add.png"));
+        QAction *a = mTasks->addAction(Icon,  tr("&New Task"), this, &MainWindow::AddTaskFocused);
+        tbTasks->addAction(a);
+        a->setPriority(QAction::LowPriority);
+    }
+
+    {
+        const QIcon Icon = QIcon::fromTheme("document-new", QIcon(":/task/images/edit.png"));
+        QAction *a = mTasks->addAction(Icon,  tr("&Edit Task"), this, &MainWindow::EditTaskFocused);
+        tbTasks->addAction(a);
+        a->setPriority(QAction::LowPriority);
+    }
+
+    {
+        slTaskVolume = new QSlider(Qt::Horizontal, this);
+        slTaskVolume->setObjectName("TaskVolume");
+        slTaskVolume->setMinimum(1);
+        slTaskVolume->setMaximum(200);
+        slTaskVolume->setValue(100);
+        slTaskVolume->setFixedWidth(50);
+
+        connect(slTaskVolume, &QSlider::sliderMoved,this, &MainWindow::VolumeTaskFocused);
+        tbTasks->addWidget(slTaskVolume);
+        //b->setIcon(QIcon(QPixmap(":/task/images/browser.png")));
+    }
+
+    {
+        cbTaskUsers = new QComboBox(this);
+        cbTaskUsers->setObjectName("TaskUser");
+        //m_b.push_back(b);
+        connect(cbTaskUsers, &QComboBox::currentTextChanged,this, &MainWindow::UserTaskFocused);
+        tbTasks->addWidget(cbTaskUsers);
+    }
+
+    {
+        const QIcon Icon = QIcon::fromTheme("document-new", QIcon(":/task/images/color.png"));
+        QAction *a = mTasks->addAction(Icon,  tr("&Color Task"), this, &MainWindow::ColorTaskFocused);
+        tbTasks->addAction(a);
+        a->setPriority(QAction::LowPriority);
+    }
+
+    {
+        seTaskRows = new QSpinBox(this);
+        seTaskRows->setObjectName("TaskRows");
+        //m_b.push_back(b);
+        seTaskRows->setMinimum(0);
+        seTaskRows->setMaximum(20);
+        seTaskRows->setValue(0);
+
+        connect(seTaskRows, qOverload<int>(&QSpinBox::valueChanged), this, &MainWindow::RowsTaskFocused);
+        tbTasks->addWidget(seTaskRows);
+        //b->setIcon(QIcon(QPixmap(":/task/images/browser.png")));
+    }
+
+    {
+        const QIcon Icon = QIcon::fromTheme("document-new", QIcon(":/task/images/delete.png"));
+        QAction *a = mTasks->addAction(Icon,  tr("&Delete Task"), this, &MainWindow::DeleteTaskSelected);
+        tbTasks->addAction(a);
+        a->setPriority(QAction::LowPriority);
+    }
+
 #endif
 
     statusBar()->hide();
@@ -391,13 +471,91 @@ void MainWindow::AddTaskSelected()
 {
     wTasks->HideFocusedTaskPopUp();
     wTasks->AddTaskSelected();
-    ShowWindowEditTask();
+    //ShowWindowEditTask();
+}
+
+void MainWindow::AddTaskFocused()
+{
+    wTasks->HideFocusedTaskPopUp();
+    wTasks->AddTaskFocused();
+    //ShowWindowEditTask();
 }
 
 void MainWindow::LevelUp()
 {
     wTasks->HideFocusedTaskPopUp();
     wTasks->LevelUp();
+}
+
+void MainWindow::Dummy()
+{
+
+}
+
+void MainWindow::DeleteTaskSelected()
+{
+    wTasks->DeleteFocused();
+}
+
+void MainWindow::EditTaskFocused()
+{
+    wTasks->ShowWindowEditTask();
+}
+
+void MainWindow::VolumeTaskFocused(int value)
+{
+    wTasks->FocusedTaskVolume(value);
+}
+
+void MainWindow::UserTaskFocused(const QString value)
+{
+    wTasks->FocusedTaskUser(value);
+}
+
+void MainWindow::ColorTaskFocused()
+{
+    QColor col = QColorDialog::getColor(Qt::white, this);
+    if (!col.isValid())
+        return;
+    wTasks->FocusedTaskColor(col);
+}
+
+void MainWindow::RowsTaskFocused(int value)
+{
+    wTasks->FousedTaskRows(value);
+}
+
+void MainWindow::FocusedTaskChanged(pTArea focused)
+{
+    if (!focused)
+        return;
+    {
+        auto val = focused->GetValue();
+        auto max = focused->ParentA()->Max()*2.0;
+        auto min = focused->ParentA()->Max()/10.0;
+        bool old=slTaskVolume->blockSignals(true);
+        slTaskVolume->setMinimum(min);
+        slTaskVolume->setMaximum(max);
+        slTaskVolume->setValue(val);
+        slTaskVolume->blockSignals(old);
+    }
+
+    {
+        QStringList all = wTasks->getUsers();
+        all.push_front("");
+
+        bool old=cbTaskUsers->blockSignals(true);
+        cbTaskUsers->clear();
+        cbTaskUsers->addItems(all);
+        cbTaskUsers->setCurrentText(focused->GetUser());
+        cbTaskUsers->blockSignals(old);
+    }
+
+    {
+        bool old=seTaskRows->blockSignals(true);
+        seTaskRows->setValue(focused->GetRows());
+        seTaskRows->blockSignals(old);
+    }
 }
 
 void MainWindow::DataBaseOpen()
@@ -408,6 +566,10 @@ void MainWindow::DataBaseOpen()
     QString fname = QFileDialog::getOpenFileName(this, tr("Open Database file"), QFileInfo(fold).dir().path(), tr("Database (*.xml)"));
     if (!fname.isEmpty())
     {
+        if (!QFile::copy(fname, fname+".backup"))
+        {
+            qInfo() << "NOT COPIED!";
+        }
         if (wTasks->ReadXML(fname))
         {
            SaveLastPath(fname);

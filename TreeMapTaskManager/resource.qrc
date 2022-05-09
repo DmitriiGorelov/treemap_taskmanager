@@ -13,6 +13,7 @@
         <file>images/browser.png</file>
         <file>images/cancel.png</file>
         <file>images/confirm.png</file>
+        <file>images/color.png</file>
     </qresource>
     <qresource prefix="/taskview">
         <file>images/viewlist.png</file>
