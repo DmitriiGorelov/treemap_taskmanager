@@ -818,7 +818,7 @@ void TArea::Calculate(const QString& prefix, size_t index, QRectF rect, int leve
         if (rows>0)
             prefixNext=QString::number(indexNext);
 
-        it->Calculate(prefixNext, indexNext, it->rect(), level);
+        it->Calculate(indexNext==Areas.size()?prefixNext:"", indexNext, it->rect(), level);
     }
 }
 
